@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<style type="text/css">
+		html, body {
+			margin: 0;
+			padding: 0;
+			overflow: hidden;
+		}
+		
+		body {
+			width: 220px;
+			height: 286px;
+		}
+		
+		.bookmarks {
+			width: 100%;
+			height: 100%;
+			border: none;
+			margin: 0;
+			padding: 0;
+			background: -webkit-gradient(linear, left top, right bottom,
+				from(#FFF), to(#E8E8E8));
+			-webkit-transition: left 0.3s;
+		}
+	</style>
+</head>
+<body>
+	<iframe src="bookmarks.html#1" class="bookmarks"></iframe>
+	<script type="text/javascript">
+		var folderList = {}, lock = false;
+		
+		function openFolder(id){
+			if(lock){
+				return;
+			}
+			
+			lock = true;
+			
+			var f = folderList[id];
+			
+			if(f == null){
+				f = document.createElement('iframe');
+				f.classList.add('bookmarks');
+				f.style.position = 'absolute';
+				f.style.left = '100%';
+				f.style.top = '0';
+				f.src = 'bookmarks.html#' + id;
+				document.body.appendChild(f);
+				folderList[id] = f;
+			}
+			
+			setTimeout(function(){
+				f.style.left = '0';
+				setTimeout(function(){
+					lock = false;
+				}, 300);
+			}, 0);
+		}
+		
+		function closeFolder(id){
+			var f = folderList[id];
+			
+			if(f != null){
+				f.style.left = '100%';
+			}
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script type="text/javascript">
+
+var allBookmarks = {}, bookmarkBar, otherBookmarks;
+
+function BookmarkItem(info, parent){
+	var title = info.title,
+		url = info.url;
+	
+	Object.defineProperties(this, {
+		id: {value: info.id},
+		title: {
+			get: function(){
+				return title;
+			},
+			set: function(value){
+				chrome.bookmarks.update(this.id, {
+					title: title = value
+				});
+			}
+		},
+		url: {
+			get: function(){
+				return url;
+			},
+			set: function(value){
+				chrome.bookmarks.update(this.id, {
+					url: url = value
+				});
+			}
+		},
+		favicon: {
+			get: function(){
+				return 'chrome://favicon/' + url;
+			}
+		},
+		parent: {
+			get: function(){
+				return parent;
+			},
+			set: function(value){
+				parent = value
+			}
+		}
+	});
+	
+	allBookmarks[info.id] = this;
+}
+
+function BookmarkFolder(info, parent){
+	var title = info.title,
+		url = info.url,
+		children = info.children.map(function(child){
+			length++;
+			if(child.url){
+				return new BookmarkItem(child, this);
+			}else{
+				return new BookmarkFolder(child, this);
+			}
+		}, this),
+		length = 0;
+	
+	Object.defineProperties(this, {
+		id: {value: info.id},
+		title: {
+			get: function(){
+				return title;
+			},
+			set: function(value){
+				title = value;
+			}
+		},
+		parent: {
+			get: function(){
+				return parent;
+			},
+			set: function(value){
+				parent = value
+			}
+		},
+		children: {
+			get: function(){
+				return children.slice();
+			}
+		},
+		length: {
+			get: function(){
+				return length;
+			}
+		},
+		onChildrenReordered: {
+			value: function(reorderInfo){
+				children = reorderInfo.map(function(id){
+					return allBookmarks[id];
+				});
+			}
+		},
+		onChildCreate: {
+			value: function(node){
+				children.push(node);
+			}
+		},
+		onChildMoved: {
+			value: function(id){
+				children = children.filter(function(node){
+					return node.id !== id;
+				});
+			}
+		},
+		onMovedTo: {
+			value: function(id, index){
+				children.splice(index, 0, allBookmarks[id]);
+			}
+		}
+	});
+	
+	allBookmarks[info.id] = this;
+}
+
+chrome.bookmarks.getTree(function(tree){
+	var root = tree[0];
+	bookmarkBar = new BookmarkFolder(root.children[0]);
+	otherBookmarks = new BookmarkFolder(root.children[1]);
+});
+
+chrome.bookmarks.onChildrenReordered.addListener(function(id, reorderInfo){
+	allBookmarks[id].onChildrenReordered(reorderInfo);
+});
+
+chrome.bookmarks.onCreated.addListener(function(id, bookmark){
+	var node, parent = allBookmarks[bookmark.parentId];
+	if(bookmark.url){
+		node = new BookmarkItem(bookmark, parent);
+	}else{
+		node = new BookmarkFolder(bookmark, parent);
+	}
+	parent.onChildCreate(node);
+});
+
+chrome.bookmarks.onMoved.addListener(function(id, moveInfo){
+	var parent = allBookmarks[moveInfo.parentId],
+		oldParent = allBookmarks[moveInfo.oldParentId];
+	oldParent.onChildMoved(id);
+	parent.onMovedTo(id, moveInfo.index);
+});
+
+chrome.bookmarks.onRemoved.addListener(function(id, removeInfo){
+	var parent = allBookmarks[removeInfo.parentId];
+	parent.onChildMoved(id);
+});
+
+chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
+	var node = allBookmarks[id];
+	
+	if(changeInfo.title != null){
+		node.title = changeInfo.title;
+	}
+	
+	if(changeInfo.url != null){
+		node.url = changeInfo.url;
+	}
+});
+
+</script>
+</head>
+<body>
+</body>
+</html>

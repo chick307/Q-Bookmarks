@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<style type="text/css">
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+		}
+		
+		body {
+			overflow: hidden;
+			-webkit-user-select: none;
+			font-size: 12px;
+		}
+		
+		body > ul {
+			display: block;
+			margin: 0;
+			padding: 0;
+			width: 100%;
+		}
+		
+		li > img {
+			width: 16px;
+			height: 16px;
+			margin: 2px;
+			vertical-align: middle;
+		}
+		
+		li > span {
+			display: block;
+			height: 20px;
+			line-height: 20px;
+			-webkit-box-flex: 1;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+		
+		#no-title-bookmarks > li {
+			display: inline-block;
+			width: 20px;
+		}
+		
+		#bookmarks > li {
+			display: -webkit-box;
+			text-shadow: 1px 1px 0 #FFF;
+		}
+		
+		#no-title-bookmarks > li, #bookmarks > li {
+			margin: 0;
+			padding: 1px;
+			border-radius: 2px;
+			cursor: pointer;
+		}
+		
+		#no-title-bookmarks > li:hover, #bookmarks > li:hover {
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#DEF), to(#CDF));
+		}
+		
+		#bookmarks > li > img {
+			margin-right: 6px;
+		}
+		
+		#back-link {
+			display: block;
+			height: 20px;
+			margin: 0;
+			padding: 1px 1em;
+			color: #666;
+			opacity: 0.5;
+			-webkit-transition: opacity 0.1s;
+			text-decoration: none;
+			border-radius: 2px;
+		}
+		
+		#back-link:hover {
+			opacity: 1;
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#DEF), to(#CDF));
+		}
+		
+		#scrollbar {
+			display: none;
+			border-radius: 3px;
+			width: 4px;
+			position: fixed;
+			right: 1px;
+			top: 1%;
+			background-color: rgba(32, 32, 32, 0.2);
+			opacity: 0.3;
+			-webkit-transition: top 0.1s, opacity 0.3s;
+		}
+	</style>
+</head>
+<body>
+	<a href="#" id="back-link">Back</a>
+	<ul id="no-title-bookmarks"></ul>
+	<ul id="bookmarks"></ul>
+	<div id="scrollbar"></div>
+	<script type="text/javascript">
+		var backgroundPage = chrome.extension.getBackgroundPage();
+		var allBookmarks =  backgroundPage.allBookmarks,
+			otherBookmarks = backgroundPage.otherBookmarks;
+		var folder = allBookmarks[location.hash.substr(1)];
+		
+		var noTitleBookmarks = document.getElementById('no-title-bookmarks');
+		var Bookmarks = document.getElementById('bookmarks');
+		
+		var backLink = document.getElementById('back-link');
+		backLink.style.display = (folder.id == 1)? 'none': 'block';
+		backLink.addEventListener('click', function(e){
+			top.closeFolder(folder.id);
+			e.preventDefault();
+		}, false);
+		
+		var scrollBar = document.getElementById("scrollbar");
+		
+		var showItem = function(child){
+			var node = document.createElement('li');
+			
+			var icon = document.createElement('img');
+			node.appendChild(icon);
+			
+			if(child.url){
+				icon.src = child.favicon;
+				
+				if(child.title === ''){
+					noTitleBookmarks.appendChild(node);
+				}else{
+					var title = document.createElement('span');
+					title.textContent = child.title;
+					node.appendChild(title);
+				
+					node.setAttribute('title', child.title);
+					Bookmarks.appendChild(node);
+				}
+				
+				node.addEventListener('click', function(e){
+					window.open(child.url);
+					e.preventDefault();
+				}, false);
+			}else{
+				icon.src = 'img/folder16.png';
+				
+				var title = document.createElement('span');
+				title.textContent = child.title;
+				node.appendChild(title);
+				
+				Bookmarks.appendChild(node);
+				
+				node.setAttribute('title', child.title);
+				node.addEventListener('click', function(e){
+					top.openFolder(child.id);
+				}, false);
+			}
+		};
+		
+		folder.children.forEach(showItem);
+		
+		if(folder.id == 1){
+			showItem(otherBookmarks);
+		}
+		
+		var scrollInterval, scrollHideInterval;
+		window.addEventListener('mousewheel', function(e){
+			if(scrollInterval != null){
+				clearInterval(scrollInterval);
+			}
+			
+			if(scrollHideInterval != null){
+				clearInterval(scrollHideInterval);
+			}
+			
+			var dy = (e.wheelDeltaY > 0)? -4: 4, i = 0;
+			scrollInterval = setInterval(function(){
+				if(i++ < 11){
+					document.body.scrollTop += dy;
+				}else{
+					clearInterval(scrollInterval);
+					scrollInterval = null;
+				}
+			}, 9);
+			
+			scrollbar.style.opacity = '1';
+			scrollbar.style.top = Math.max(1, Math.floor(100 *
+				Math.min(scrollHeight - offsetHeight,
+				document.body.scrollTop + dy * 11) / scrollHeight)) + '%';
+			
+			scrollHideInterval = setInterval(function(){
+				scrollbar.style.opacity = '0.3';
+			}, 1000);
+		}, false);
+		
+		var offsetHeight = document.body.offsetHeight,
+			scrollHeight = document.body.scrollHeight;
+		
+		if(offsetHeight < scrollHeight){
+			scrollbar.style.display = 'block';
+			scrollbar.style.height = Math.floor(offsetHeight * 100 / scrollHeight) + '%';
+		}
+	</script>
+</body>
+</html>
