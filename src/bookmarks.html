@@ -177,7 +177,7 @@
 				clearInterval(scrollHideInterval);
 			}
 			
-			var dy = (e.wheelDeltaY > 0)? -4: 4, i = 0;
+			var dy = -Math.floor(e.wheelDeltaY / 10), i = 0;
 			scrollInterval = setInterval(function(){
 				if(i++ < 11){
 					document.body.scrollTop += dy;
@@ -185,7 +185,7 @@
 					clearInterval(scrollInterval);
 					scrollInterval = null;
 				}
-			}, 9);
+			}, 10);
 			
 			scrollbar.style.opacity = '1';
 			scrollbar.style.top = Math.max(1, Math.floor(100 *
