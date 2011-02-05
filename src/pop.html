@@ -51,6 +51,7 @@
 				folderList[id] = f;
 			}
 			
+			f.style.display = 'block';
 			setTimeout(function(){
 				f.style.left = '0';
 				setTimeout(function(){
@@ -64,6 +65,9 @@
 			
 			if(f != null){
 				f.style.left = '100%';
+				setTimeout(function(){
+					f.style.display = 'none';
+				}, 300);
 			}
 		}
 	</script>
