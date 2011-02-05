@@ -96,6 +96,19 @@
 			opacity: 0.3;
 			-webkit-transition: top 0.1s, opacity 0.3s;
 		}
+		
+		#scrollbar:hover {
+			opacity: 1;
+		}
+		
+		#scrollbar.dragging {
+			-webkit-transition: opacity 0.3s;
+			opacity: 1;
+		}
+		
+		#scrollbar.scrolling {
+			opacity: 1;
+		}
 	</style>
 </head>
 <body>
@@ -179,7 +192,7 @@
 			
 			var dy = -Math.floor(e.wheelDeltaY / 10), i = 0;
 			scrollInterval = setInterval(function(){
-				if(i++ < 11){
+				if(i++ < 10){
 					document.body.scrollTop += dy;
 				}else{
 					clearInterval(scrollInterval);
@@ -187,13 +200,21 @@
 				}
 			}, 10);
 			
-			scrollbar.style.opacity = '1';
-			scrollbar.style.top = Math.max(1, Math.floor(100 *
-				Math.min(scrollHeight - offsetHeight,
-				document.body.scrollTop + dy * 11) / scrollHeight)) + '%';
+			var dh = offsetHeight - scrollbar.offsetHeight;
+			var top = Math.round(dh * (document.body.scrollTop + dy * 10) /
+				(scrollHeight - offsetHeight));
+			
+			if(top < 0){
+				top = 0;
+			}else if(top > dh){
+				top = dh;
+			}
+			
+			scrollbar.classList.add('scrolling');
+			scrollbar.style.top = top + 'px';
 			
 			scrollHideInterval = setInterval(function(){
-				scrollbar.style.opacity = '0.3';
+				scrollbar.classList.remove('scrolling');
 			}, 1000);
 		}, false);
 		
@@ -204,6 +225,46 @@
 			scrollbar.style.display = 'block';
 			scrollbar.style.height = Math.floor(offsetHeight * 100 / scrollHeight) + '%';
 		}
+		
+		var scrollStart;
+		
+		scrollbar.addEventListener('mouseover', function(e){
+			e.stopPropagation();
+		}, false);
+		
+		scrollbar.addEventListener('mousedown', function(e){
+			scrollbar.classList.add('dragging');
+			scrollStart = {
+				mouse: e.clientY,
+				top: scrollbar.offsetTop
+			};
+			
+			e.stopPropagation();
+		}, false);
+		
+		document.addEventListener('mouseup', function(e){
+			if(scrollStart != null){
+				scrollbar.classList.remove('dragging');
+				scrollStart = null;
+			}
+		}, false);
+		
+		document.addEventListener('mousemove', function(e){
+			if(scrollStart != null){
+				var top = scrollStart.top + (e.clientY - scrollStart.mouse),
+					scroll = scrollHeight - offsetHeight,
+					dh = offsetHeight - scrollbar.offsetHeight;
+				
+				if(0 > top){
+					top = 0;
+				}else if(top > dh){
+					top = dh;
+				}
+				
+				scrollbar.style.top = top + 'px';
+				document.body.scrollTop = Math.floor(scroll * top / dh);
+			}
+		}, false);
 	</script>
 </body>
 </html>
