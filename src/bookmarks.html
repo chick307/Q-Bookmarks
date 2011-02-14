@@ -12,10 +12,32 @@
 		}
 		
 		body {
-			overflow: hidden;
+			overflow-x: hidden;
+			overflow-y: auto;
 			-webkit-user-select: none;
 			font-size: 12px;
+			padding-top: 20px;
+			-webkit-box-sizing: border-box;
 		}
+		
+		::-webkit-scrollbar {
+			width: 4px;
+			position: absolute;
+			left: 0;
+			bottom: 0;
+			top: 0;
+		}
+		
+		::-webkit-scrollbar-thumb {
+			background-color: rgba(0, 0, 0, 0.2);
+			border-radius: 2px;
+		}
+		
+		::-webkit-scrollbar-button:start:decrement,
+		::-webkit-scrollbar-button:end:increment {
+			height: 1px;
+			display: block;
+		} 
 		
 		body > ul {
 			display: block;
@@ -71,43 +93,29 @@
 			display: block;
 			height: 20px;
 			margin: 0;
-			padding: 1px 1em;
-			color: #666;
-			opacity: 0.5;
-			-webkit-transition: opacity 0.1s;
+			padding: 0 0.5em;
+			color: #AAA;
+			-webkit-transition: color 0.2s;
 			text-decoration: none;
-			border-radius: 2px;
+			border-bottom: 1px solid #CCC;
+			border-radius: 2px 2px 0 0;
+			position: fixed;
+			-webkit-box-sizing: border-box;
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#FFF), to(#F0F0F0));
+			top: 0;
+			left: 0;
+			right: 1px;
+		}
+		
+		#back-link::before {
+			content: "≪ ";
 		}
 		
 		#back-link:hover {
-			opacity: 1;
+			color: #666;
 			background: -webkit-gradient(linear, left top, left bottom,
 				from(#DEF), to(#CDF));
-		}
-		
-		#scrollbar {
-			display: none;
-			border-radius: 3px;
-			width: 4px;
-			position: fixed;
-			right: 1px;
-			top: 1%;
-			background-color: rgba(32, 32, 32, 0.2);
-			opacity: 0.3;
-			-webkit-transition: top 0.1s, opacity 0.3s;
-		}
-		
-		#scrollbar:hover {
-			opacity: 1;
-		}
-		
-		#scrollbar.dragging {
-			-webkit-transition: opacity 0.3s;
-			opacity: 1;
-		}
-		
-		#scrollbar.scrolling {
-			opacity: 1;
 		}
 	</style>
 </head>
@@ -115,7 +123,6 @@
 	<a href="#" id="back-link">Back</a>
 	<ul id="no-title-bookmarks"></ul>
 	<ul id="bookmarks"></ul>
-	<div id="scrollbar"></div>
 	<script type="text/javascript">
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var allBookmarks =  backgroundPage.allBookmarks,
@@ -131,8 +138,6 @@
 			top.closeFolder(folder.id);
 			e.preventDefault();
 		}, false);
-		
-		var scrollBar = document.getElementById("scrollbar");
 		
 		var showItem = function(child){
 			var node = document.createElement('li');
@@ -178,6 +183,7 @@
 		
 		if(folder.id == 1){
 			showItem(otherBookmarks);
+			document.body.style.paddingTop = 0;
 		}
 		
 		var scrollInterval, scrollHideInterval;
@@ -200,70 +206,7 @@
 				}
 			}, 10);
 			
-			var dh = offsetHeight - scrollbar.offsetHeight;
-			var top = Math.round(dh * (document.body.scrollTop + dy * 10) /
-				(scrollHeight - offsetHeight));
-			
-			if(top < 0){
-				top = 0;
-			}else if(top > dh){
-				top = dh;
-			}
-			
-			scrollbar.classList.add('scrolling');
-			scrollbar.style.top = top + 'px';
-			
-			scrollHideInterval = setInterval(function(){
-				scrollbar.classList.remove('scrolling');
-			}, 1000);
-		}, false);
-		
-		var offsetHeight = document.body.offsetHeight,
-			scrollHeight = document.body.scrollHeight;
-		
-		if(offsetHeight < scrollHeight){
-			scrollbar.style.display = 'block';
-			scrollbar.style.height = Math.floor(offsetHeight * 100 / scrollHeight) + '%';
-		}
-		
-		var scrollStart;
-		
-		scrollbar.addEventListener('mouseover', function(e){
-			e.stopPropagation();
-		}, false);
-		
-		scrollbar.addEventListener('mousedown', function(e){
-			scrollbar.classList.add('dragging');
-			scrollStart = {
-				mouse: e.clientY,
-				top: scrollbar.offsetTop
-			};
-			
-			e.stopPropagation();
-		}, false);
-		
-		document.addEventListener('mouseup', function(e){
-			if(scrollStart != null){
-				scrollbar.classList.remove('dragging');
-				scrollStart = null;
-			}
-		}, false);
-		
-		document.addEventListener('mousemove', function(e){
-			if(scrollStart != null){
-				var top = scrollStart.top + (e.clientY - scrollStart.mouse),
-					scroll = scrollHeight - offsetHeight,
-					dh = offsetHeight - scrollbar.offsetHeight;
-				
-				if(0 > top){
-					top = 0;
-				}else if(top > dh){
-					top = dh;
-				}
-				
-				scrollbar.style.top = top + 'px';
-				document.body.scrollTop = Math.floor(scroll * top / dh);
-			}
+			e.preventDefault();
 		}, false);
 	</script>
 </body>
