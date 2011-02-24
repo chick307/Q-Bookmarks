@@ -27,7 +27,7 @@
 	</style>
 </head>
 <body>
-	<iframe src="bookmarks.html#1" class="bookmarks"></iframe>
+	<iframe src="/views/list.html#1" class="bookmarks"></iframe>
 	<script type="text/javascript">
 		var folderList = {}, lock = false;
 		
@@ -46,7 +46,7 @@
 				f.style.position = 'absolute';
 				f.style.left = '100%';
 				f.style.top = '0';
-				f.src = 'bookmarks.html#' + id;
+				f.src = '/views/list.html#' + id;
 				document.body.appendChild(f);
 				folderList[id] = f;
 			}
