@@ -30,6 +30,7 @@
 	<iframe src="/views/list.html#1" class="bookmarks"></iframe>
 	<script type="text/javascript">
 		var folderList = {}, lock = false;
+		folderList['1'] = document.querySelector('iframe');
 		
 		function openFolder(id){
 			if(lock){
@@ -62,6 +63,56 @@
 		
 		function closeFolder(id){
 			var f = folderList[id];
+			
+			if(f != null){
+				f.style.left = '100%';
+				setTimeout(function(){
+					f.style.display = 'none';
+				}, 300);
+			}
+		}
+		
+		function reloadFolder(id){
+			var f = folderList[id];
+			
+			if(f != null){
+				f.contentWindow.location.reload();
+			}
+		}
+		
+		var editList = {};
+		
+		function openEdit(id){
+			if(lock || id == 2){
+				return;
+			}
+			
+			lock = true;
+			
+			var f = editList[id];
+			
+			if(f == null){
+				f = document.createElement('iframe');
+				f.classList.add('bookmarks');
+				f.style.position = 'absolute';
+				f.style.left = '100%';
+				f.style.top = '0';
+				f.src = 'edit.html#' + id;
+				document.body.appendChild(f);
+				editList[id] = f;
+			}
+			
+			f.style.display = 'block';
+			setTimeout(function(){
+				f.style.left = '0';
+				setTimeout(function(){
+					lock = false;
+				}, 300);
+			}, 0);
+		}
+		
+		function closeEdit(id){
+			var f = editList[id];
 			
 			if(f != null){
 				f.style.left = '100%';

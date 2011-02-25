@@ -142,6 +142,10 @@
 		var showItem = function(child){
 			var node = document.createElement('li');
 			
+			node.addEventListener('contextmenu', function(e){
+				top.openEdit(child.id);
+			}, false);
+			
 			var icon = document.createElement('img');
 			node.appendChild(icon);
 			

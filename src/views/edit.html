@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="utf-8">
+	<style type="text/css">
+		html, body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+		}
+		
+		body {
+			overflow-x: hidden;
+			overflow-y: auto;
+			-webkit-user-select: none;
+			font-size: 12px;
+			-webkit-box-sizing: border-box;
+		}
+		
+		#toolbar {
+			height: 22px;
+			border-bottom: 1px solid #CCC;
+			-webkit-box-sizing: border-box;
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#FFF), to(#F0F0F0));
+		}
+		
+		#toolbar > button {
+			height: 20px;
+			margin: 0 2px 0 0;
+			padding: 0 1em;
+			border: 1px solid #BBB;
+			border-radius: 3px;
+			text-shadow: 1px 1px 0 #FFF;
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#FFF), to(#DDD));
+			-webkit-box-sizing: border-box;
+			float: left;
+			-webkit-transition: border 0.2s;
+			cursor: pointer;
+			color: #404040;
+			font-weight: bold;
+		}
+		
+		#toolbar > button:disabled {
+			background: #FFF;
+			color: #AAA;
+			cursor: default;
+		}
+		
+		#toolbar > button:enabled:hover {
+			border-color: #8AC;
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#FEC), to(#ED8));
+			text-shadow: 1px 1px 0 #CEF;
+		}
+		
+		#toolbar > button:enabled:active {
+			-webkit-box-shadow: inset 0 0 2px 1px rgba(64, 32, 0, 0.1);
+		}
+		
+		#toolbar::after {
+			display: block;
+			content: "";
+			clear: both;
+		}
+		
+		label {
+			display: -webkit-box;
+			-webkit-box-orient: vertical;
+			margin: 3px 0;
+		}
+		
+		label > span {
+			display: block;
+			margin: 0 0.2em;
+			line-height: 20px;
+		}
+		
+		label > input {
+			display: block;
+			-webkit-box-flex: 1;
+			padding: 0 3px;
+			border: 1px solid #CCC;
+			border-radius: 3px;
+			height: 16pt;
+			background: #FFF;
+			-webkit-box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+			font-size: 10pt;
+		}
+		
+		label > input:hover {
+			border-color: #AAA;
+		}
+		
+		label > input:focus {
+			background: #FFF0D8;
+			outline: 1px thick #FFEE88;
+		}
+	</style>
+</head>
+<body>
+	<div id="toolbar">
+		<button id="cancel-btn">Cancel</button>
+		<button id="ok-btn" disabled>OK</button>
+	</div>
+	<label for="title-box">
+		<span>Title :</span>
+		<input type="text" id="title-box">
+	</label>
+	<label for="url-box">
+		<span>URL :</span>
+		<input type="text" id="url-box">
+	</label>
+	<script type="text/javascript">
+		var backgroundPage = chrome.extension.getBackgroundPage();
+		var allBookmarks =  backgroundPage.allBookmarks,
+			otherBookmarks = backgroundPage.otherBookmarks;
+		var item = allBookmarks[location.hash.substr(1)];
+		
+		var okBtn = document.querySelector('#ok-btn'),
+			cancelBtn = document.querySelector('#cancel-btn'),
+			titleBox = document.querySelector('#title-box'),
+			urlBox = document.querySelector('#url-box');
+		
+		titleBox.value = item.title;
+		
+		if(item.hasOwnProperty('url')){
+			urlBox.value = item.url;
+		}else{
+			urlBox.parentNode.style.display = 'none';
+		}
+		
+		titleBox.addEventListener('input', function(){
+			if(okBtn.hasAttribute('disabled'))
+				okBtn.removeAttribute('disabled');
+		}, false);
+		
+		okBtn.addEventListener('click', function(){
+			top.closeEdit(item.id);
+			if(titleBox.value != item.title)
+				item.title = titleBox.value;
+			if(urlBox.value != item.url)
+				item.url = urlBox.value;
+			top.reloadFolder(item.parent.id);
+			okBtn.removeAttribute('disabled', 'disabled');
+		}, false);
+		
+		cancelBtn.addEventListener('click', function(){
+			top.closeEdit(item.id);
+			titleBox.value = item.title;
+			urlBox.value = item.url;
+			okBtn.removeAttribute('disabled', 'disabled');
+		}, false);
+	</script>
+</body>
+</html>
