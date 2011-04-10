@@ -37,7 +37,6 @@
 				from(#FFF), to(#DDD));
 			-webkit-box-sizing: border-box;
 			float: left;
-			-webkit-transition: border 0.2s;
 			cursor: pointer;
 			color: #404040;
 			font-weight: bold;
@@ -49,15 +48,8 @@
 			cursor: default;
 		}
 		
-		#toolbar > button:enabled:hover {
-			border-color: #8AC;
-			background: -webkit-gradient(linear, left top, left bottom,
-				from(#FEC), to(#ED8));
-			text-shadow: 1px 1px 0 #CEF;
-		}
-		
 		#toolbar > button:enabled:active {
-			-webkit-box-shadow: inset 0 0 2px 1px rgba(64, 32, 0, 0.1);
+			-webkit-box-shadow: inset 0 0 2px 1px rgba(32, 32, 32, 0.1);
 		}
 		
 		#toolbar::after {
@@ -172,14 +164,14 @@
 			if(urlBox.value != item.url)
 				item.url = urlBox.value;
 			top.reloadFolder(item.parent.id);
-			okBtn.removeAttribute('disabled', 'disabled');
+			okBtn.setAttribute('disabled', 'disabled');
 		}, false);
 		
 		cancelBtn.addEventListener('click', function(){
 			top.closeEdit(item.id);
 			titleBox.value = item.title;
 			urlBox.value = item.url;
-			okBtn.removeAttribute('disabled', 'disabled');
+			okBtn.setAttribute('disabled', 'disabled');
 		}, false);
 		
 		removeBox.addEventListener('change', function(){

@@ -16,7 +16,7 @@
 			overflow-y: auto;
 			-webkit-user-select: none;
 			font-size: 12px;
-			padding-top: 20px;
+			padding-top: 22px;
 			-webkit-box-sizing: border-box;
 		}
 		
@@ -26,17 +26,23 @@
 			left: 0;
 			bottom: 0;
 			top: 0;
+			backgroud: #FFF;
 		}
 		
 		::-webkit-scrollbar-thumb {
-			background-color: rgba(0, 0, 0, 0.2);
+			background: #CCC;
 			border-radius: 2px;
+		}
+		
+		::-webkit-scrollbar-track-piece {
+			background: #FFF;
 		}
 		
 		::-webkit-scrollbar-button:start:decrement,
 		::-webkit-scrollbar-button:end:increment {
 			height: 1px;
 			display: block;
+			background: #FFF;
 		} 
 		
 		body > ul {
@@ -83,6 +89,7 @@
 		#no-title-bookmarks > li:hover, #bookmarks > li:hover {
 			background: -webkit-gradient(linear, left top, left bottom,
 				from(#DEF), to(#CDF));
+			text-shadow: 1px 1px 0 #E8F8FF;
 		}
 		
 		li.removed {
@@ -95,7 +102,8 @@
 		
 		#back-link {
 			display: block;
-			height: 20px;
+			height: 22px;
+			line-height: 20px;
 			margin: 0;
 			padding: 0 0.5em;
 			color: #AAA;
@@ -109,17 +117,12 @@
 				from(#FFF), to(#F0F0F0));
 			top: 0;
 			left: 0;
-			right: 1px;
+			right: 0;
+			text-shadow: 1px 1px 0 #FFF;
 		}
 		
 		#back-link::before {
-			content: "≪ ";
-		}
-		
-		#back-link:hover {
-			color: #666;
-			background: -webkit-gradient(linear, left top, left bottom,
-				from(#DEF), to(#CDF));
+			content: "<< ";
 		}
 	</style>
 </head>
@@ -194,29 +197,6 @@
 			showItem(otherBookmarks);
 			document.body.style.paddingTop = 0;
 		}
-		
-		var scrollInterval, scrollHideInterval;
-		window.addEventListener('mousewheel', function(e){
-			if(scrollInterval != null){
-				clearInterval(scrollInterval);
-			}
-			
-			if(scrollHideInterval != null){
-				clearInterval(scrollHideInterval);
-			}
-			
-			var dy = -Math.floor(e.wheelDeltaY / 10), i = 0;
-			scrollInterval = setInterval(function(){
-				if(i++ < 10){
-					document.body.scrollTop += dy;
-				}else{
-					clearInterval(scrollInterval);
-					scrollInterval = null;
-				}
-			}, 10);
-			
-			e.preventDefault();
-		}, false);
 		
 		window.addEventListener('bookmark-remove', function(e){
 			var node = document.querySelector('[data-id="' + e.id + '"]');
