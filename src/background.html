@@ -44,6 +44,11 @@ function BookmarkItem(info, parent){
 			set: function(value){
 				parent = value
 			}
+		},
+		remove: {
+			value: function(){
+				chrome.bookmarks.remove(this.id);
+			}
 		}
 	});
 	
@@ -89,6 +94,11 @@ function BookmarkFolder(info, parent){
 		length: {
 			get: function(){
 				return length;
+			}
+		},
+		remove: {
+			value: function(){
+				chrome.bookmarks.removeTree(this.id);
 			}
 		},
 		onChildrenReordered: {

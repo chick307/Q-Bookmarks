@@ -80,7 +80,6 @@
 		
 		label > input {
 			display: block;
-			-webkit-box-flex: 1;
 			padding: 0 3px;
 			border: 1px solid #CCC;
 			border-radius: 3px;
@@ -98,6 +97,28 @@
 			background: #FFF0D8;
 			outline: 1px thick #FFEE88;
 		}
+		
+		label[for="remove-box"] {
+			margin-top: 16px;
+			-webkit-box-align: center;
+			-webkit-box-orient: horizontal;
+		}
+		
+		#remove-btn {
+			opacity: 0;
+			-webkit-transition: opacity 0.2s;
+			height: 20px;
+			padding: 0 1em;
+			border: 1px solid #B22;
+			border-radius: 3px;
+			text-shadow: -1px -1px 0 #D55;
+			background: -webkit-gradient(linear, left top, left bottom,
+				from(#F88), to(#D55));
+			-webkit-box-sizing: border-box;
+			cursor: pointer;
+			color: #FFF;
+			font-weight: bold;
+		}
 	</style>
 </head>
 <body>
@@ -113,6 +134,11 @@
 		<span>URL :</span>
 		<input type="text" id="url-box">
 	</label>
+	<label for="remove-box">
+		<input type="checkbox" id="remove-box">
+		<span>Remove this item</span>
+	</label>
+	<button id="remove-btn">Remove</button>
 	<script type="text/javascript">
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var allBookmarks =  backgroundPage.allBookmarks,
@@ -122,7 +148,9 @@
 		var okBtn = document.querySelector('#ok-btn'),
 			cancelBtn = document.querySelector('#cancel-btn'),
 			titleBox = document.querySelector('#title-box'),
-			urlBox = document.querySelector('#url-box');
+			urlBox = document.querySelector('#url-box'),
+			removeBox = document.querySelector('#remove-box'),
+			removeBtn = document.querySelector('#remove-btn');
 		
 		titleBox.value = item.title;
 		
@@ -153,6 +181,16 @@
 			urlBox.value = item.url;
 			okBtn.removeAttribute('disabled', 'disabled');
 		}, false);
+		
+		removeBox.addEventListener('change', function(){
+			removeBtn.style.opacity = this.checked? '1': '0';
+		}, false);
+		
+		removeBtn.addEventListener('click', function(){
+			top.removeBookmark(item.id);
+			top.closeEdit(item.id);
+			item.remove();
+		});
 	</script>
 </body>
 </html>

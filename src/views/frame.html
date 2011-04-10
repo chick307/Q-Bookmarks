@@ -121,6 +121,16 @@
 				}, 300);
 			}
 		}
+		
+		function removeBookmark(id){
+			var e = document.createEvent('Event');
+			e.initEvent('bookmark-remove', false, false);
+			e.id = id;
+			
+			for(var folderid in folderList){
+				folderList[folderid].contentWindow.dispatchEvent(e);
+			}
+		}
 	</script>
 </body>
 </html>
