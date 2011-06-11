@@ -206,17 +206,19 @@
 		
 		var scrollbar = document.querySelector('#scrollbar');
 		var clientHeight = document.body.clientHeight;
+		var scrollHeight = document.body.scrollHeight;
 		
-		if(Bookmarks.offsetHeight <= clientHeight){
+		if(scrollHeight <= clientHeight){
 			scrollbar.style.display = 'none';
 		}else{
-			var height = 100 * (clientHeight - 44) / Bookmarks.offsetHeight;
-			scrollbar.style.top = '23px';
-			scrollbar.style.height = height + '%';
+			var height = Math.floor(clientHeight * (clientHeight - 2) / scrollHeight);
+			scrollbar.style.top = '1px';
+			scrollbar.style.height = height + 'px';
 			
 			document.addEventListener('scroll', function(){
-				scrollbar.style.top = 23 + this.body.scrollTop *
-					(clientHeight - 23) / Bookmarks.offsetHeight + 'px';
+				scrollbar.style.top = 1 + Math.floor(this.body.scrollTop *
+					(clientHeight - height - 2) /
+					(scrollHeight - clientHeight)) + 'px';
 			}, false);
 			
 			var scrolling = false, pos, scrollTop;
@@ -225,21 +227,18 @@
 				scrolling = true;
 				pos = event.pageY;
 				scrollTop = document.body.scrollTop;
-				event.preventDefault();
-				
-				console.log(pos, scrollTop)
 			}, false);
 			
 			document.addEventListener('mousemove', function(event){
 				if(scrolling){
 					document.body.scrollTop = scrollTop + (event.pageY - pos) *
-						Bookmarks.offsetHeight / height;
+						(clientHeight - height) / (scrollHeight - clientHeight);
 				}
 			}, false);
 			
 			document.addEventListener('mouseup', function(){
 				if(scrolling)
-					scrolling = true;
+					scrolling = false;
 			}, false);
 		}
 	</script>
