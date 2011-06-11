@@ -56,9 +56,10 @@ function BookmarkItem(info, parent){
 }
 
 function BookmarkFolder(info, parent){
+	var children_ = info.children || [];
 	var title = info.title,
 		url = info.url,
-		children = info.children.map(function(child){
+		children = children_.map(function(child){
 			length++;
 			if(child.url){
 				return new BookmarkItem(child, this);
