@@ -13,37 +13,26 @@
 		
 		body {
 			overflow-x: hidden;
-			overflow-y: auto;
+			overflow-y: scroll;
 			-webkit-user-select: none;
 			font-size: 12px;
 			padding-top: 22px;
 			-webkit-box-sizing: border-box;
 		}
 		
-		::-webkit-scrollbar {
-			width: 4px;
-			position: absolute;
-			left: 0;
-			bottom: 0;
-			top: 0;
-			backgroud: #FFF;
+		body::-webkit-scrollbar {
+			width: 0;
+			height: 0;
 		}
 		
-		::-webkit-scrollbar-thumb {
-			background: #CCC;
+		#scrollbar {
+			position: fixed;
 			border-radius: 2px;
+			width: 4px;
+			min-height: 4px;
+			right: 1px;
+			background: rgba(0, 0, 0, 0.2);
 		}
-		
-		::-webkit-scrollbar-track-piece {
-			background: #FFF;
-		}
-		
-		::-webkit-scrollbar-button:start:decrement,
-		::-webkit-scrollbar-button:end:increment {
-			height: 1px;
-			display: block;
-			background: #FFF;
-		} 
 		
 		body > ul {
 			display: block;
@@ -130,6 +119,7 @@
 	<a href="#" id="back-link">Back</a>
 	<ul id="no-title-bookmarks"></ul>
 	<ul id="bookmarks"></ul>
+	<div id="scrollbar"></div>
 	<script type="text/javascript">
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var allBookmarks =  backgroundPage.allBookmarks,
@@ -205,6 +195,45 @@
 				node.classList.add('removed');
 			}
 		}, false);
+		
+		var scrollbar = document.querySelector('#scrollbar');
+		var clientHeight = document.body.clientHeight;
+		
+		if(Bookmarks.offsetHeight <= clientHeight){
+			scrollbar.style.display = 'none';
+		}else{
+			var height = 100 * (clientHeight - 44) / Bookmarks.offsetHeight;
+			scrollbar.style.top = '23px';
+			scrollbar.style.height = height + '%';
+			
+			document.addEventListener('scroll', function(){
+				scrollbar.style.top = 23 + this.body.scrollTop *
+					(clientHeight - 23) / Bookmarks.offsetHeight + 'px';
+			}, false);
+			
+			var scrolling = false, pos, scrollTop;
+			
+			scrollbar.addEventListener('mousedown', function(event){
+				scrolling = true;
+				pos = event.pageY;
+				scrollTop = document.body.scrollTop;
+				event.preventDefault();
+				
+				console.log(pos, scrollTop)
+			}, false);
+			
+			document.addEventListener('mousemove', function(event){
+				if(scrolling){
+					document.body.scrollTop = scrollTop + (event.pageY - pos) *
+						Bookmarks.offsetHeight / height;
+				}
+			}, false);
+			
+			document.addEventListener('mouseup', function(){
+				if(scrolling)
+					scrolling = true;
+			}, false);
+		}
 	</script>
 </body>
 </html>
