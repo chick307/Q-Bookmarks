@@ -1,5 +1,5 @@
 {
-	"name": "Chrome Bookmarks",
+	"name": "Q Bookmarks",
 	"version": "0.0.0.1",
 	"description": "Bookmark Popup",
 	
@@ -19,7 +19,7 @@
 	"background_page": "background.html",
 	
 	"browser_action": {
-		"default_title": "Chrome Bookmark",
+		"default_title": "Q Bookmarks",
 		"default_icon": "image/icon-19.png",
 		"popup": "views/frame.html"
 	}
