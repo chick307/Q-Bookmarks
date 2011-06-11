@@ -162,7 +162,15 @@
 				}
 				
 				node.addEventListener('click', function(e){
-					window.open(child.url);
+					if(child.url.indexOf('javascript') === 0){
+						chrome.tabs.getSelected(null, function(tab){
+							chrome.tabs.update(tab.id, {url: child.url});
+						});
+					}else{
+						window.open(child.url);
+					}
+
+					top.close();
 					e.preventDefault();
 				}, false);
 			}else{
