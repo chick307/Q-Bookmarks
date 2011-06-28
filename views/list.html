@@ -168,7 +168,10 @@
 							chrome.tabs.update(tab.id, {url: child.url});
 						});
 					}else{
-						window.open(child.url);
+						chrome.tabs.create({
+							url: child.url,
+							selected: true
+						});
 					}
 
 					top.close();
