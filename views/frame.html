@@ -29,6 +29,11 @@
 <body>
 	<iframe src="/views/list.html#1" class="bookmarks"></iframe>
 	<script type="text/javascript">
+		var backgroundPage = chrome.extension.getBackgroundPage();
+		var pref = backgroundPage.pref;
+
+		var openIn = pref.get('open-in');
+
 		var folderList = {}, lock = false;
 		folderList['1'] = document.querySelector('iframe');
 		
