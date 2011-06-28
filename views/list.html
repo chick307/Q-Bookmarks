@@ -162,7 +162,8 @@
 				}
 				
 				node.addEventListener('click', function(e){
-					if(child.url.indexOf('javascript') === 0){
+					if(child.url.indexOf('javascript') === 0 ||
+						top.openIn === '1'){
 						chrome.tabs.getSelected(null, function(tab){
 							chrome.tabs.update(tab.id, {url: child.url});
 						});
