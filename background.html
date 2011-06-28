@@ -181,6 +181,7 @@ chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
 var pref = new Preference({prefix: 'pref-'});
 
 pref.setDefault('open-in', '2');
+pref.setDefault('font-family', 'sans-serif');
 
 pref.addListener(function(key, value){
 	var event = document.createEvent('Event');
