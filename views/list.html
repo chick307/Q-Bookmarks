@@ -19,6 +19,8 @@
 			padding-top: 22px;
 			-webkit-box-sizing: border-box;
 		}
+
+		.icon-size-24 body { padding-top: 30px; }
 		
 		#scrollbar {
 			position: fixed;
@@ -49,6 +51,8 @@
 			margin: 2px;
 			vertical-align: middle;
 		}
+
+		.icon-size-24 li > img { width: 24px; height: 24px; }
 		
 		li > span {
 			display: block;
@@ -59,11 +63,15 @@
 			overflow: hidden;
 			white-space: nowrap;
 		}
+
+		.icon-size-24 li > span { height: 28px; line-height: 28px; }
 		
 		#no-title-bookmarks > li {
 			display: inline-block;
 			width: 20px;
 		}
+
+		.icon-size-24 #no-title-bookmarks > li { width: 28px; }
 		
 		#bookmarks > li {
 			display: -webkit-box;
@@ -111,6 +119,8 @@
 			right: 0;
 			text-shadow: 1px 1px 0 #FFF;
 		}
+
+		.icon-size-24 #back-link { height: 30px; line-height: 28px; }
 		
 		#back-link::before {
 			content: "<< ";
@@ -215,6 +225,9 @@
 		}, false);
 
 		document.body.style.fontFamily = top.fontFamily;
+
+		document.querySelector('html')
+			.classList.add('icon-size-' + top.iconSize);
 
 		// スクロールバーを初期化
 		scrollbarInitialize(document.body);
