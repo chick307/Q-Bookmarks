@@ -34,6 +34,19 @@
 		<span id="open-in-msg">saved</span>
 	</ul>
 
+	<h1>Appearance</h1>
+	<ul>
+		<li><label for="font-family-box">font family</label>
+		<select id="font-family-box">
+			<option value="serif">Serif</option>
+			<option value="sans-serif">Sans Serif</option>
+			<option value="cursive">Cursive</option>
+			<option value="fantasy">Fantasy</option>
+			<option value="monospace">Monospace</option>
+		</select>
+		<span id="font-family-msg">saved</span>
+	</ul>
+
 	<script type="text/javascript">
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var pref = backgroundPage.pref;
@@ -45,6 +58,16 @@
 			pref.set('open-in', openInBox.value);
 
 			var msg = Q('#open-in-msg');
+			onSaved(msg);
+		}, false);
+
+
+		var fontFamilyBox = Q('#font-family-box');
+		fontFamilyBox.value = pref.get('font-family');
+		fontFamilyBox.addEventListener('change', function(){
+			pref.set('font-family', fontFamilyBox.value);
+
+			var msg = Q('#font-family-msg');
 			onSaved(msg);
 		}, false);
 
@@ -76,6 +99,8 @@
 
 			if(key === 'open-in' && openInBox.value !== value){
 				openInBox.value = event.value;
+			}else if(key === 'font-family' && fontFamilyBox.value !== value){
+				fontFamilyBox.value = value;
 			}
 		});
 
