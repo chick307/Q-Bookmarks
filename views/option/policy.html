@@ -45,6 +45,13 @@
 			<option value="monospace">Monospace</option>
 		</select>
 		<span id="font-family-msg">saved</span>
+		<li><label for="icon-size-box">icon size</label>
+		<select id="icon-size-box">
+			<option value="16">16 x 16</option>
+			<option value="20">20 x 20</option>
+			<option value="24">24 x 24</option>
+		</select>
+		<span id="icon-size-msg">saved</span>
 	</ul>
 
 	<script type="text/javascript">
@@ -68,6 +75,16 @@
 			pref.set('font-family', fontFamilyBox.value);
 
 			var msg = Q('#font-family-msg');
+			onSaved(msg);
+		}, false);
+
+
+		var iconSizeBox = Q('#icon-size-box');
+		iconSizeBox.value = pref.get('icon-size');
+		iconSizeBox.addEventListener('change', function(){
+			pref.set('icon-size', iconSizeBox.value);
+
+			var msg = Q('#icon-size-msg');
 			onSaved(msg);
 		}, false);
 
@@ -101,6 +118,8 @@
 				openInBox.value = event.value;
 			}else if(key === 'font-family' && fontFamilyBox.value !== value){
 				fontFamilyBox.value = value;
+			}else if(key === 'icon-size' && iconSizeBox.value !== value){
+				iconSizeBox.value = event.value;
 			}
 		});
 

@@ -182,6 +182,7 @@ var pref = new Preference({prefix: 'pref-'});
 
 pref.setDefault('open-in', '2');
 pref.setDefault('font-family', 'sans-serif');
+pref.setDefault('icon-size', '16');
 
 pref.addListener(function(key, value){
 	var event = document.createEvent('Event');
