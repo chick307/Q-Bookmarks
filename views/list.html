@@ -3,6 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title></title>
+	<script src="/scripts/scrollbar.js"></script>
+	<link rel="stylesheet" href="/styles/scrollbar.css">
 	<style type="text/css">
 		html, body {
 			margin: 0;
@@ -12,25 +14,25 @@
 		}
 		
 		body {
-			overflow-x: hidden;
-			overflow-y: scroll;
 			-webkit-user-select: none;
 			font-size: 12px;
 			padding-top: 22px;
 			-webkit-box-sizing: border-box;
 		}
 		
-		body::-webkit-scrollbar {
-			width: 0;
-			height: 0;
-		}
-		
 		#scrollbar {
 			position: fixed;
+			padding: 1px;
+			width: 6px;
+			top: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		#scrollbar > .scrollbar-thumb {
+			margin: 0 1px;
 			border-radius: 2px;
 			width: 4px;
-			min-height: 4px;
-			right: 1px;
 			background: rgba(0, 0, 0, 0.2);
 		}
 		
@@ -115,11 +117,15 @@
 		}
 	</style>
 </head>
-<body>
+<body data-scrollbar="scrollbar">
 	<a href="#" id="back-link">Back</a>
 	<ul id="no-title-bookmarks"></ul>
 	<ul id="bookmarks"></ul>
-	<div id="scrollbar"></div>
+
+	<div id="scrollbar" class="scrollbar">
+		<div class="scrollbar-thumb"></div>
+	</div>
+
 	<script type="text/javascript">
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var allBookmarks =  backgroundPage.allBookmarks,
@@ -209,44 +215,9 @@
 		}, false);
 
 		document.body.style.fontFamily = top.fontFamily;
-		
-		var scrollbar = document.querySelector('#scrollbar');
-		var clientHeight = document.body.clientHeight;
-		var scrollHeight = document.body.scrollHeight;
-		
-		if(scrollHeight <= clientHeight){
-			scrollbar.style.display = 'none';
-		}else{
-			var height = Math.floor(clientHeight * (clientHeight - 2) / scrollHeight);
-			scrollbar.style.top = '1px';
-			scrollbar.style.height = height + 'px';
-			
-			document.addEventListener('scroll', function(){
-				scrollbar.style.top = 1 + Math.floor(this.body.scrollTop *
-					(clientHeight - height - 2) /
-					(scrollHeight - clientHeight)) + 'px';
-			}, false);
-			
-			var scrolling = false, pos, scrollTop;
-			
-			scrollbar.addEventListener('mousedown', function(event){
-				scrolling = true;
-				pos = event.pageY;
-				scrollTop = document.body.scrollTop;
-			}, false);
-			
-			document.addEventListener('mousemove', function(event){
-				if(scrolling){
-					document.body.scrollTop = scrollTop + (event.pageY - pos) *
-						(clientHeight - height) / (scrollHeight - clientHeight);
-				}
-			}, false);
-			
-			document.addEventListener('mouseup', function(){
-				if(scrolling)
-					scrolling = false;
-			}, false);
-		}
+
+		// スクロールバーを初期化
+		scrollbarInitialize(document.body);
 	</script>
 </body>
 </html>
