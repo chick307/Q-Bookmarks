@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
+<script type="text/javascript" src="scripts/pref.js"></script>
 <script type="text/javascript">
 
 var allBookmarks = {}, bookmarkBar, otherBookmarks;
@@ -173,6 +174,25 @@ chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
 	if(changeInfo.url != null){
 		node.url = changeInfo.url;
 	}
+});
+
+
+// オプションの初期化
+var pref = new Preference({prefix: 'pref-'});
+
+pref.setDefault('open-in', '2');
+pref.setDefault('font-family', 'sans-serif');
+pref.setDefault('icon-size', '16');
+
+pref.addListener(function(key, value){
+	var event = document.createEvent('Event');
+	event.initEvent('pref-changed', false, false)
+	event.key = key;
+	event.value = value;
+
+	chrome.extension.getViews().forEach(function(view){
+		view.dispatchEvent(event);
+	});
 });
 
 </script>

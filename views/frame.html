@@ -9,10 +9,9 @@
 			overflow: hidden;
 		}
 		
-		body {
-			width: 224px;
-			height: 286px;
-		}
+		body { width: 224px; height: 286px; }
+		.icon-size-20 body { width: 264px; height: 338px; }
+		.icon-size-24 body { width: 304px; height: 390px; }
 		
 		.bookmarks {
 			width: 100%;
@@ -29,6 +28,16 @@
 <body>
 	<iframe src="/views/list.html#1" class="bookmarks"></iframe>
 	<script type="text/javascript">
+		var backgroundPage = chrome.extension.getBackgroundPage();
+		var pref = backgroundPage.pref;
+
+		var openIn = pref.get('open-in');
+		var fontFamily = pref.get('font-family');
+		var iconSize = pref.get('icon-size');
+
+		document.querySelector('html')
+			.classList.add('icon-size-' + iconSize);
+
 		var folderList = {}, lock = false;
 		folderList['1'] = document.querySelector('iframe');
 		
