@@ -36,6 +36,11 @@
 		var fontFamily = pref.get('font-family'); // フォントファミリー
 		var iconSize = pref.get('icon-size'); // アイコンのサイズ
 
+		// 「その他のブックマーク」を隠すかどうか
+		var hideOtherBookmarks = pref.get('hide-other-bookmarks');
+		var hideOtherBookmarksIfEmpty =
+			pref.get('hide-other-bookmarks-if-empty');
+
 		document.querySelector('html')
 			.classList.add('icon-size-' + iconSize);
 

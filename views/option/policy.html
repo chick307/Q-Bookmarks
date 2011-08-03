@@ -21,6 +21,10 @@
 		span.saved {
 			opacity: 1;
 		}
+
+		li > br + input {
+			margin-left: 3em;
+		}
 	</style>
 </head>
 <body>
@@ -32,6 +36,12 @@
 			<option value="2">new tab</option>
 		</select>
 		<span id="open-in-msg">saved</span>
+		<li><input type="checkbox" id="hide-other-bookmarks-box">
+		<label for="hide-other-bookmarks-box">Hide &quot;Other Bookmarks&quot; folder</label>
+		<span id="hide-other-bookmarks-msg">saved</span></br>
+		<input type="checkbox" id="hide-other-bookmarks-if-empty-box">
+		<label for="hide-other-bookmarks-if-empty-box">if empty</label>
+		<span id="hide-other-bookmarks-if-empty-msg">saved</span>
 	</ul>
 
 	<h1>Appearance</h1>
@@ -65,6 +75,31 @@
 			pref.set('open-in', openInBox.value);
 
 			var msg = Q('#open-in-msg');
+			onSaved(msg);
+		}, false);
+
+
+		var hideOtherBookmarksBox = Q('#hide-other-bookmarks-box');
+		hideOtherBookmarksBox.checked = pref.get('hide-other-bookmarks');
+		hideOtherBookmarksBox.addEventListener('change', function(){
+			pref.set('hide-other-bookmarks', this.checked);
+			hideOtherBookmarksIfEmptyBox.disabled = !this.checked;
+
+			var msg = Q('#hide-other-bookmarks-msg');
+			onSaved(msg);
+		}, false);
+
+
+		var hideOtherBookmarksIfEmptyBox =
+			Q('#hide-other-bookmarks-if-empty-box');
+		hideOtherBookmarksIfEmptyBox.checked =
+			pref.get('hide-other-bookmarks-if-empty');
+		if(!hideOtherBookmarksBox.checked)
+			hideOtherBookmarksIfEmptyBox.disabled = true;
+		hideOtherBookmarksIfEmptyBox.addEventListener('change', function(){
+			pref.set('hide-other-bookmarks-if-empty', this.checked);
+
+			var msg = Q('#hide-other-bookmarks-if-empty-msg');
 			onSaved(msg);
 		}, false);
 
