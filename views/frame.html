@@ -7,8 +7,7 @@
 
 		/* (16 + 6)px * 13 = 286px */
 		body { width: 224px; height: 286px;
-			min-height: 286px; max-height: 572px;
-			-webkit-transition: height 0.3s; }
+			min-height: 286px; max-height: 572px; }
 
 		/* (20 + 6)px * 13 = 338px */
 		.icon-size-20 body { width: 264px;
@@ -44,6 +43,16 @@
 		var stack = []; // 開いているフレーム
 
 
+		var minHeight = 286, maxHeight = 572;
+		if(iconSize === '20'){
+			minHeight = 338;
+			maxHeight = 572;
+		}else if(iconSize === '24'){
+			minHeight = 390;
+			maxHeight = 570;
+		}
+
+
 		function getBookmarkView(id){
 			if(id in BookmarkView.list){
 				return BookmarkView.list[id];
@@ -73,10 +82,13 @@
 				lock = true;
 				var frame = this.frame;
 				stack.unshift(frame);
-				getHeight(frame, function(height){
-					console.log(height);
-					document.body.style.height = height + 'px';
+
+				// フレームの中身のサイズを取得してポップアップのサイズ変更
+				getHeight(frame, function(height, callback){
+					height = Math.min(maxHeight, Math.max(minHeight, height));
+					setHeight(height, callback)
 				});
+
 				frame.style.display = 'block';
 				setTimeout(function(){
 					frame.style.left = '0';
@@ -91,9 +103,13 @@
 				lock = true;
 				var frame = this.frame;
 				stack.shift();
-				getHeight(stack[0], function(height){
-					document.body.style.height = height + 'px';
+
+				// フレームの中身のサイズを取得してポップアップのサイズ変更
+				getHeight(stack[0], function(height, callback){
+					height = Math.min(maxHeight, Math.max(minHeight, height));
+					setHeight(height, callback)
 				});
+
 				frame.style.left = '100%';
 				setTimeout(function(){
 					frame.style.display = 'none';
@@ -108,9 +124,24 @@
 		var startFrame = document.querySelector('iframe');
 		BookmarkView.list['1'] = new BookmarkView('1', startFrame);
 		stack.push(startFrame);
-		getHeight(startFrame, function(height){
+		getHeight(startFrame, function(height, callback){
 			document.body.style.height = height + 'px';
+			callback();
 		});
+
+
+		var raf = window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame;
+
+		function transition(from, to, ms, callback){
+			var start = Date.now();
+			raf(function f(){
+				var progress = Math.min(ms, Date.now() - start);
+				callback(Math.floor(from + (to - from) * (progress / ms)));
+				if(progress !== ms)
+					raf(f);
+			});
+		}
 
 
 		function getBookmarkEdit(id){
@@ -173,11 +204,18 @@
 		}
 
 
+		function setHeight(height, callback){
+			transition(document.height, height, 200, function(h){
+				document.body.style.height = h + 'px';
+				if(h === height)
+					callback();
+			});
+		}
+
+
 		function getHeight(frame, callback){
-			console.log(frame.dataset.bookmarkId);
 			var win = frame.contentWindow;
 			if(frame.contentWindow.loaded){
-				console.log(win.getHeight);
 				win.getHeight(callback);
 			}else{
 				win.addEventListener('load', function(){

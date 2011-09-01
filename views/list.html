@@ -110,10 +110,6 @@
 		}, false);
 
 
-		// スクロールバーを初期化
-		scrollbarInitialize(document.body);
-
-
 		// 読み込みフラグ
 		var loaded = false;
 		window.onload = function(){
@@ -126,7 +122,12 @@
 				var m = noTitleBookmarks.childElementCount;
 				var n = Bookmarks.childElementCount;
 				var u = Number(top.iconSize) + 6;
-				callback((Math.ceil(m / 10) + n) * u);
+				callback((Math.ceil(m / 10) + n) * u, function(){
+					// 高さが設定されるのを待ってスクロールバーを初期化
+					setTimeout(function(){
+						scrollbarInitialize(document.body);
+					}, 400);
+				});
 			}, 0);
 		}
 
