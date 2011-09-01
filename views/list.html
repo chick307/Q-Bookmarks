@@ -98,7 +98,10 @@
 
 		folder.children.forEach(appendItem);
 		if(folder.id == 1){
-			appendItem(otherBookmarks);
+			if(!top.hideOtherBookmarks || top.hideOtherBookmarksIfEmpty &&
+				otherBookmarks.children.length > 0){
+				appendItem(otherBookmarks);
+			}
 			document.body.style.paddingTop = 0;
 		}
 
