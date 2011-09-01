@@ -1,142 +1,71 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
 	<meta charset="utf-8">
-	<title></title>
 	<script src="/scripts/scrollbar.js"></script>
 	<link rel="stylesheet" href="/styles/scrollbar.css">
-	<style type="text/css">
-		html, body {
-			margin: 0;
-			padding: 0;
-			width: 100%;
-			height: 100%;
-		}
-		
-		body {
-			-webkit-user-select: none;
-			font-size: 12px;
-			padding-top: 22px;
+	<style>
+		html, body { margin: 0; padding: 0; width: 100%; height: 100%; }
+
+		body { font-size: 12px; padding-top: 22px;
 			-webkit-box-sizing: border-box;
-		}
+			-webkit-user-select: none; }
 
-		.icon-size-20 body {
-			font-size: 13px;
-			padding-top: 26px;
-		}
+		.icon-size-20 body { font-size: 13px; padding-top: 26px; }
+		.icon-size-24 body { font-size: 14px; padding-top: 30px; }
 
-		.icon-size-24 body {
-			font-size: 14px;
-			padding-top: 30px;
-		}
-		
-		#scrollbar {
-			position: fixed;
-			padding: 1px;
-			width: 6px;
-			top: 0;
-			right: 0;
-			bottom: 0;
-		}
+		#scrollbar { position: fixed; padding: 1px; width: 6px;
+			top: 0; right: 0; bottom: 0; }
 
-		#scrollbar > .scrollbar-thumb {
-			margin: 0 1px;
-			border-radius: 2px;
-			width: 4px;
-			background: rgba(0, 0, 0, 0.2);
-		}
-		
-		body > ul {
-			display: block;
-			margin: 0;
-			padding: 0;
-			width: 100%;
-		}
-		
-		li > img {
-			width: 16px;
-			height: 16px;
-			margin: 2px;
-			vertical-align: middle;
-		}
+		#scrollbar > .scrollbar-thumb { margin: 0 1px; border-radius: 2px;
+			width: 4px; background: rgba(0, 0, 0, 0.2); }
+
+		body > ul { display: block; margin: 0; padding: 0; width: 100%; }
+
+		li > img { width: 16px; height: 16px; margin: 2px;
+			vertical-align: middle; }
 
 		.icon-size-20 li > img { width: 20px; height: 20px; }
 		.icon-size-24 li > img { width: 24px; height: 24px; }
-		
-		li > span {
-			display: block;
-			height: 20px;
-			line-height: 20px;
-			-webkit-box-flex: 1;
-			text-overflow: ellipsis;
-			overflow: hidden;
-			white-space: nowrap;
-		}
+
+		li > span { display: block; height: 20px; line-height: 20px;
+			-webkit-box-flex: 1; text-overflow: ellipsis; overflow: hidden;
+			white-space: nowrap; }
 
 		.icon-size-20 li > span { height: 24px; line-height: 24px; }
 		.icon-size-24 li > span { height: 28px; line-height: 28px; }
-		
-		#no-title-bookmarks > li {
-			display: inline-block;
-			width: 20px;
-		}
+
+		#no-title-bookmarks > li { display: inline-block; width: 20px; }
 
 		.icon-size-20 #no-title-bookmarks > li { width: 24px; }
 		.icon-size-24 #no-title-bookmarks > li { width: 28px; }
-		
-		#bookmarks > li {
-			display: -webkit-box;
-			text-shadow: 1px 1px 0 #FFF;
-		}
-		
-		#no-title-bookmarks > li, #bookmarks > li {
-			margin: 0;
-			padding: 1px;
-			border-radius: 2px;
-			cursor: pointer;
-		}
-		
+
+		#bookmarks > li { display: -webkit-box; text-shadow: 1px 1px 0 #FFF; }
+
+		#no-title-bookmarks > li, #bookmarks > li { margin: 0; padding: 1px;
+			border-radius: 2px; cursor: pointer; }
+
 		#no-title-bookmarks > li:hover, #bookmarks > li:hover {
-			background: -webkit-gradient(linear, left top, left bottom,
-				from(#DEF), to(#CDF));
-			text-shadow: 1px 1px 0 #E8F8FF;
-		}
-		
-		li.removed {
-			display: none !important;
-		}
-		
-		#bookmarks > li > img {
-			margin-right: 6px;
-		}
-		
-		#back-link {
-			display: block;
-			height: 22px;
-			line-height: 20px;
-			margin: 0;
-			padding: 0 0.5em;
-			color: #AAA;
+			background: -webkit-linear-gradient(left top, #DEF, #CDF);
+			text-shadow: 1px 1px 0 #E8F8FF; }
+
+		li.removed { display: none !important; }
+
+		#bookmarks > li > img { margin-right: 6px; }
+
+		#back-link { display: block; height: 22px; line-height: 20px;
+			margin: 0; padding: 0 0.5em; color: #AAA;
 			-webkit-transition: color 0.2s;
-			text-decoration: none;
-			border-bottom: 1px solid #CCC;
-			border-radius: 2px 2px 0 0;
-			position: fixed;
-			-webkit-box-sizing: border-box;
-			background: -webkit-gradient(linear, left top, left bottom,
-				from(#FFF), to(#F0F0F0));
-			top: 0;
-			left: 0;
-			right: 0;
-			text-shadow: 1px 1px 0 #FFF;
-		}
+			text-decoration: none; border-bottom: 1px solid #CCC;
+			border-radius: 2px 2px 0 0; position: fixed;
+			box-sizing: border-box;
+			background: -webkit-linear-gradient(top, #FFF, #F0F0F0);
+			top: 0; left: 0; right: 0; text-shadow: 1px 1px 0 #FFF; }
 
 		.icon-size-20 #back-link { height: 26px; line-height: 24px; }
 		.icon-size-24 #back-link { height: 30px; line-height: 28px; }
-		
-		#back-link::before {
-			content: "<< ";
-		}
+
+		#back-link::before { content: "<< "; }
 	</style>
 </head>
 <body data-scrollbar="scrollbar">
@@ -148,49 +77,58 @@
 		<div class="scrollbar-thumb"></div>
 	</div>
 
-	<script type="text/javascript">
-		var backgroundPage = chrome.extension.getBackgroundPage();
-		var allBookmarks =  backgroundPage.allBookmarks,
-			otherBookmarks = backgroundPage.otherBookmarks;
+	<script>
+		document.body.style.fontFamily = top.fontFamily;
+		document.querySelector('html')
+			.classList.add('icon-size-' + top.iconSize);
+
+		var allBookmarks = top.backgroundPage.allBookmarks,
+			otherBookmarks = top.backgroundPage.otherBookmarks;
 		var folder = allBookmarks[location.hash.substr(1)];
-		
+
 		var noTitleBookmarks = document.getElementById('no-title-bookmarks');
 		var Bookmarks = document.getElementById('bookmarks');
-		
+
 		var backLink = document.getElementById('back-link');
 		backLink.style.display = (folder.id == 1)? 'none': 'block';
-		backLink.addEventListener('click', function(e){
-			top.closeFolder(folder.id);
-			e.preventDefault();
+		backLink.addEventListener('click', function(event){
+			top.getBookmarkView(folder.id).close();
+			event.preventDefault();
 		}, false);
-		
-		var showItem = function(child){
+
+		folder.children.forEach(appendItem);
+		if(folder.id == 1){
+			appendItem(otherBookmarks);
+			document.body.style.paddingTop = 0;
+		}
+
+
+		window.addEventListener('bookmark-remove', function(e){
+			var node = document.querySelector('[data-id="' + e.id + '"]');
+			if(node)
+				node.classList.add('removed');
+		}, false);
+
+
+		// スクロールバーを初期化
+		scrollbarInitialize(document.body);
+
+
+		function appendItem(child){
 			var node = document.createElement('li');
-			node.setAttribute('data-id', child.id);
-			
+			node.dataset.id = child.id;
 			node.addEventListener('contextmenu', function(e){
-				top.openEdit(child.id);
+				top.getBookmarkEdit(child.id).open();
 			}, false);
-			
+
 			var icon = document.createElement('img');
 			node.appendChild(icon);
-			
+
 			if(child.url){
 				icon.src = child.favicon;
-				
-				if(child.title === ''){
-					noTitleBookmarks.appendChild(node);
-				}else{
-					var title = document.createElement('span');
-					title.textContent = child.title;
-					node.appendChild(title);
-				
-					node.setAttribute('title', child.title);
-					Bookmarks.appendChild(node);
-				}
-				
+
 				node.addEventListener('click', function(e){
-					if(child.url.indexOf('javascript') === 0 ||
+					if(child.url.indexOf('javascript:') === 0 ||
 						top.openIn === '1'){
 						chrome.tabs.getSelected(null, function(tab){
 							chrome.tabs.update(tab.id, {url: child.url});
@@ -205,44 +143,32 @@
 					top.close();
 					e.preventDefault();
 				}, false);
+				if(child.title === ''){
+					noTitleBookmarks.appendChild(node);
+				}else{
+					var title = document.createElement('span');
+					title.textContent = child.title;
+					node.appendChild(title);
+
+					node.setAttribute('title', child.title);
+
+					Bookmarks.appendChild(node);
+				}
 			}else{
 				icon.src = '/image/folder-' + top.iconSize + '.png';
-				
+
 				var title = document.createElement('span');
 				title.textContent = child.title;
 				node.appendChild(title);
-				
-				Bookmarks.appendChild(node);
-				
+
 				node.setAttribute('title', child.title);
 				node.addEventListener('click', function(e){
-					top.openFolder(child.id);
+					top.getBookmarkView(child.id).open();
 				}, false);
+
+				Bookmarks.appendChild(node);
 			}
-		};
-		
-		folder.children.forEach(showItem);
-		
-		if(folder.id == 1){
-			showItem(otherBookmarks);
-			document.body.style.paddingTop = 0;
 		}
-		
-		window.addEventListener('bookmark-remove', function(e){
-			var node = document.querySelector('[data-id="' + e.id + '"]');
-			
-			if(node){
-				node.classList.add('removed');
-			}
-		}, false);
-
-		document.body.style.fontFamily = top.fontFamily;
-
-		document.querySelector('html')
-			.classList.add('icon-size-' + top.iconSize);
-
-		// スクロールバーを初期化
-		scrollbarInitialize(document.body);
 	</script>
 </body>
 </html>
