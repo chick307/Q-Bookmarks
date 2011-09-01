@@ -114,6 +114,24 @@
 		scrollbarInitialize(document.body);
 
 
+		// 読み込みフラグ
+		var loaded = false;
+		window.onload = function(){
+			loaded = true;
+		};
+
+		/** 全体の高さを非同期で返す */
+		function getHeight(callback){
+			setTimeout(function(){
+				var m = noTitleBookmarks.childElementCount;
+				var n = Bookmarks.childElementCount;
+				var u = Number(top.iconSize) + 6;
+				callback((Math.ceil(m / 10) + n) * u);
+			}, 0);
+		}
+
+
+		/** ブックマークをDOMに追加する */
 		function appendItem(child){
 			var node = document.createElement('li');
 			node.dataset.id = child.id;
@@ -172,3 +190,4 @@
 	</script>
 </body>
 </html>
+

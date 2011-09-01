@@ -6,13 +6,17 @@
 		html, body { margin: 0; padding: 0; overflow: hidden; }
 
 		/* (16 + 6)px * 13 = 286px */
-		body { width: 224px; height: 286px; max-height: 286px; }
+		body { width: 224px; height: 286px;
+			min-height: 286px; max-height: 572px;
+			-webkit-transition: height 0.3s; }
 
 		/* (20 + 6)px * 13 = 338px */
-		.icon-size-20 body { width: 264px; height: 338px;  max-height: 338px; }
+		.icon-size-20 body { width: 264px;
+			min-height: 338px;  max-height: 572px; }
 
 		/* (24 + 6)px * 13 = 390px */
-		.icon-size-24 body { width: 304px; height: 390px;  max-height: 390px; }
+		.icon-size-24 body { width: 304px;
+			min-height: 390px;  max-height: 570px; }
 
 		[data-bookmark-id] { display: block; position: absolute;
 			top: 0; left: 0; width: 100%; height: 100%;
@@ -37,6 +41,7 @@
 			.classList.add('icon-size-' + iconSize);
 
 		var lock = false; // アニメーション中にフォルダを開けないようにする
+		var stack = []; // 開いているフレーム
 
 
 		function getBookmarkView(id){
@@ -67,6 +72,11 @@
 					return;
 				lock = true;
 				var frame = this.frame;
+				stack.unshift(frame);
+				getHeight(frame, function(height){
+					console.log(height);
+					document.body.style.height = height + 'px';
+				});
 				frame.style.display = 'block';
 				setTimeout(function(){
 					frame.style.left = '0';
@@ -76,10 +86,18 @@
 				}, 0);
 			},
 			close: function(){
+				if(lock)
+					return;
+				lock = true;
 				var frame = this.frame;
+				stack.shift();
+				getHeight(stack[0], function(height){
+					document.body.style.height = height + 'px';
+				});
 				frame.style.left = '100%';
 				setTimeout(function(){
 					frame.style.display = 'none';
+					lock = false;
 				}, 300);
 			},
 			reload: function(){
@@ -87,8 +105,12 @@
 			}
 		};
 
-		BookmarkView.list['1'] =
-			new BookmarkView('1', document.querySelector('iframe'));
+		var startFrame = document.querySelector('iframe');
+		BookmarkView.list['1'] = new BookmarkView('1', startFrame);
+		stack.push(startFrame);
+		getHeight(startFrame, function(height){
+			document.body.style.height = height + 'px';
+		});
 
 
 		function getBookmarkEdit(id){
@@ -126,10 +148,14 @@
 				}, 0);
 			},
 			close: function(){
+				if(lock)
+					return;
+				lock = true;
 				var frame = this.frame;
 				frame.style.left = '100%';
 				setTimeout(function(){
 					frame.style.display = 'none';
+					lock = false;
 				}, 300);
 			}
 		};
@@ -145,6 +171,21 @@
 				BookmarkView.list[id_].frame.contentWindow.dispatchEvent(event);
 			});
 		}
+
+
+		function getHeight(frame, callback){
+			console.log(frame.dataset.bookmarkId);
+			var win = frame.contentWindow;
+			if(frame.contentWindow.loaded){
+				console.log(win.getHeight);
+				win.getHeight(callback);
+			}else{
+				win.addEventListener('load', function(){
+					win.getHeight(callback);
+				}, false);
+			}
+		}
 	</script>
 </body>
 </html>
+
