@@ -1,145 +1,229 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html>
 <head>
 	<meta charset="utf-8">
-	<style type="text/css">
-		html, body {
-			margin: 0;
-			padding: 0;
-			overflow: hidden;
-		}
-		
-		body { width: 224px; height: 286px; }
-		.icon-size-20 body { width: 264px; height: 338px; }
-		.icon-size-24 body { width: 304px; height: 390px; }
-		
-		.bookmarks {
-			width: 100%;
-			height: 100%;
-			border: none;
-			margin: 0;
-			padding: 0;
-			background: -webkit-gradient(linear, left top, right bottom,
-				from(#FFF), to(#E8E8E8));
-			-webkit-transition: left 0.3s;
-		}
+	<style>
+		html, body { margin: 0; padding: 0; overflow: hidden; }
+
+		/* (16 + 6)px * 13 = 286px */
+		body { width: 224px; height: 286px;
+			min-height: 286px; max-height: 572px; }
+
+		/* (20 + 6)px * 13 = 338px */
+		.icon-size-20 body { width: 264px;
+			min-height: 338px;  max-height: 572px; }
+
+		/* (24 + 6)px * 13 = 390px */
+		.icon-size-24 body { width: 304px;
+			min-height: 390px;  max-height: 570px; }
+
+		[data-bookmark-id] { display: block; position: absolute;
+			top: 0; left: 0; width: 100%; height: 100%;
+			border: none; margin: 0; padding: 0;
+			background: -webkit-linear-gradient(left top, #FFF, #E8E8E8);
+			-webkit-transition: left 0.3s; }
 	</style>
 </head>
 <body>
-	<iframe src="/views/list.html#1" class="bookmarks"></iframe>
-	<script type="text/javascript">
+	<iframe src="/views/list.html#1" data-bookmark-id="1"></iframe>
+	<script>
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var pref = backgroundPage.pref;
 
-		var openIn = pref.get('open-in');
-		var fontFamily = pref.get('font-family');
-		var iconSize = pref.get('icon-size');
+		// ポップアップを開いているときは pref は変更されない
+
+		var openIn = pref.get('open-in'); // ブックマークをどこで開くか
+		var fontFamily = pref.get('font-family'); // フォントファミリー
+		var iconSize = pref.get('icon-size'); // アイコンのサイズ
 
 		document.querySelector('html')
 			.classList.add('icon-size-' + iconSize);
 
-		var folderList = {}, lock = false;
-		folderList['1'] = document.querySelector('iframe');
-		
-		function openFolder(id){
-			if(lock){
-				return;
+		var lock = false; // アニメーション中にフォルダを開けないようにする
+		var stack = []; // 開いているフレーム
+
+
+		var minHeight = 286, maxHeight = 572;
+		if(iconSize === '20'){
+			minHeight = 338;
+			maxHeight = 572;
+		}else if(iconSize === '24'){
+			minHeight = 390;
+			maxHeight = 570;
+		}
+
+
+		function getBookmarkView(id){
+			if(id in BookmarkView.list){
+				return BookmarkView.list[id];
+			}else{
+				return BookmarkView.list[id] = new BookmarkView(id);
 			}
-			
-			lock = true;
-			
-			var f = folderList[id];
-			
-			if(f == null){
-				f = document.createElement('iframe');
-				f.classList.add('bookmarks');
-				f.style.position = 'absolute';
-				f.style.left = '100%';
-				f.style.top = '0';
-				f.src = '/views/list.html#' + id;
-				document.body.appendChild(f);
-				folderList[id] = f;
+		}
+
+
+		function BookmarkView(id, frame){
+			if(!frame){
+				frame = document.createElement('iframe');
+				frame.style.left = '100%';
+				frame.src = '/views/list.html#' + id;
+				document.body.appendChild(frame);
 			}
-			
-			f.style.display = 'block';
-			setTimeout(function(){
-				f.style.left = '0';
+
+			this.frame = frame;
+			this.id = this.frame.dataset.bookmarkId = id;
+		}
+
+		BookmarkView.list = {};
+		BookmarkView.prototype = {
+			open: function(){
+				if(lock)
+					return;
+				lock = true;
+				var frame = this.frame;
+				stack.unshift(frame);
+
+				// フレームの中身のサイズを取得してポップアップのサイズ変更
+				getHeight(frame, function(height, callback){
+					height = Math.min(maxHeight, Math.max(minHeight, height));
+					setHeight(height, callback)
+				});
+
+				frame.style.display = 'block';
 				setTimeout(function(){
+					frame.style.left = '0';
+					setTimeout(function(){
+						lock = false;
+					}, 300);
+				}, 0);
+			},
+			close: function(){
+				if(lock)
+					return;
+				lock = true;
+				var frame = this.frame;
+				stack.shift();
+
+				// フレームの中身のサイズを取得してポップアップのサイズ変更
+				getHeight(stack[0], function(height, callback){
+					height = Math.min(maxHeight, Math.max(minHeight, height));
+					setHeight(height, callback)
+				});
+
+				frame.style.left = '100%';
+				setTimeout(function(){
+					frame.style.display = 'none';
 					lock = false;
 				}, 300);
-			}, 0);
+			},
+			reload: function(){
+				this.frame.contentWindow.location.reload();
+			}
+		};
+
+		var startFrame = document.querySelector('iframe');
+		BookmarkView.list['1'] = new BookmarkView('1', startFrame);
+		stack.push(startFrame);
+		getHeight(startFrame, function(height, callback){
+			document.body.style.height = height + 'px';
+			callback();
+		});
+
+
+		var raf = window.requestAnimationFrame ||
+			window.webkitRequestAnimationFrame;
+
+		function transition(from, to, ms, callback){
+			var start = Date.now();
+			raf(function f(){
+				var progress = Math.min(ms, Date.now() - start);
+				callback(Math.floor(from + (to - from) * (progress / ms)));
+				if(progress !== ms)
+					raf(f);
+			});
 		}
-		
-		function closeFolder(id){
-			var f = folderList[id];
-			
-			if(f != null){
-				f.style.left = '100%';
+
+
+		function getBookmarkEdit(id){
+			if(id == 2){
+				return null;
+			}else if(id in BookmarkEdit.list){
+				return BookmarkEdit.list[id];
+			}else{
+				return BookmarkEdit.list[id] = new BookmarkEdit(id);
+			}
+		}
+
+
+		function BookmarkEdit(id){
+			var frame = this.frame = document.createElement('iframe');
+			frame.style.left = '100%';
+			frame.src = 'edit.html#' + id;
+			document.body.appendChild(frame);
+			this.id = frame.dataset.bookmarkId = id;
+		}
+
+		BookmarkEdit.list = {};
+		BookmarkEdit.prototype = {
+			open: function(){
+				if(lock)
+					return false;
+				lock = true;
+				var frame = this.frame;
+				frame.style.display = 'block';
 				setTimeout(function(){
-					f.style.display = 'none';
-				}, 300);
-			}
-		}
-		
-		function reloadFolder(id){
-			var f = folderList[id];
-			
-			if(f != null){
-				f.contentWindow.location.reload();
-			}
-		}
-		
-		var editList = {};
-		
-		function openEdit(id){
-			if(lock || id == 2){
-				return;
-			}
-			
-			lock = true;
-			
-			var f = editList[id];
-			
-			if(f == null){
-				f = document.createElement('iframe');
-				f.classList.add('bookmarks');
-				f.style.position = 'absolute';
-				f.style.left = '100%';
-				f.style.top = '0';
-				f.src = 'edit.html#' + id;
-				document.body.appendChild(f);
-				editList[id] = f;
-			}
-			
-			f.style.display = 'block';
-			setTimeout(function(){
-				f.style.left = '0';
+					frame.style.left = '0';
+					setTimeout(function(){
+						lock = false;
+					}, 300);
+				}, 0);
+			},
+			close: function(){
+				if(lock)
+					return;
+				lock = true;
+				var frame = this.frame;
+				frame.style.left = '100%';
 				setTimeout(function(){
+					frame.style.display = 'none';
 					lock = false;
 				}, 300);
-			}, 0);
-		}
-		
-		function closeEdit(id){
-			var f = editList[id];
-			
-			if(f != null){
-				f.style.left = '100%';
-				setTimeout(function(){
-					f.style.display = 'none';
-				}, 300);
 			}
-		}
-		
+		};
+
+
+		/** ブックマークが削除されたというイベントを BookmarkView に配送 */
 		function removeBookmark(id){
-			var e = document.createEvent('Event');
-			e.initEvent('bookmark-remove', false, false);
-			e.id = id;
-			
-			for(var folderid in folderList){
-				folderList[folderid].contentWindow.dispatchEvent(e);
+			var event = document.createEvent('Event');
+			event.initEvent('bookmark-remove', false, false);
+			event.id = id;
+
+			Object.keys(BookmarkView.list).forEach(function(id_){
+				BookmarkView.list[id_].frame.contentWindow.dispatchEvent(event);
+			});
+		}
+
+
+		function setHeight(height, callback){
+			transition(document.height, height, 200, function(h){
+				document.body.style.height = h + 'px';
+				if(h === height)
+					callback();
+			});
+		}
+
+
+		function getHeight(frame, callback){
+			var win = frame.contentWindow;
+			if(frame.contentWindow.loaded){
+				win.getHeight(callback);
+			}else{
+				win.addEventListener('load', function(){
+					win.getHeight(callback);
+				}, false);
 			}
 		}
 	</script>
 </body>
 </html>
+
