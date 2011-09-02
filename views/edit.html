@@ -127,6 +127,13 @@
 			top.getBookmarkEdit(item.id).close();
 			item.remove();
 		});
+
+
+		function getHeight(callback){
+			setTimeout(function(){
+				callback(0, function(){});
+			}, 0);
+		}
 	</script>
 </body>
 </html>
