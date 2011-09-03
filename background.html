@@ -199,6 +199,7 @@ chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
 
 // Omniboxからの検索
 function search(text){
+	text = text.toLowerCase();
 	var result = bookmarkBar.search(text);
 	return result.concat(otherBookmarks.search(text));
 }
