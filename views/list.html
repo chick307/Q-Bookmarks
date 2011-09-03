@@ -190,10 +190,20 @@
 				icon.src = child.favicon;
 
 				node.addEventListener('click', function(e){
-					if(child.url.indexOf('javascript:') === 0 ||
-						top.openIn === '1'){
+					var openInCurrentTab =
+						child.url.indexOf('javascript:') === 0 ||
+						(e.button? top.mcOpenIn: top.openIn) === '1';
+
+					if(openInCurrentTab){
 						chrome.tabs.getSelected(null, function(tab){
-							chrome.tabs.update(tab.id, {url: child.url});
+							if(tab){
+								chrome.tabs.update(tab.id, {url: child.url});
+							}else{
+								chrome.tabs.create({
+									url: child.url,
+									selected: true
+								});
+							}
 						});
 					}else{
 						chrome.tabs.create({
