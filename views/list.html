@@ -101,7 +101,7 @@
 		var folder = allBookmarks[location.hash.substr(1)] || {};
 
 		// 検索ボックスを表示するかどうか
-		var showSearchBox = folder.id == '1';
+		var showSearchBox = folder.id == '1' && top.searchBoxEnabled;
 		if(showSearchBox)
 			document.body.classList.add('show-search-box');
 

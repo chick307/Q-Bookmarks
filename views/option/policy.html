@@ -64,6 +64,13 @@
 		<span id="icon-size-msg">saved</span>
 	</ul>
 
+	<h1>Search</h1>
+	<ul>
+		<li><input type="checkbox" id="search-box-enabled">
+		<label for="search-box-enabled">enable search box</label>
+		<span id="search-box-enabled-msg">saved</span></br>
+	</ul>
+
 	<script type="text/javascript">
 		var backgroundPage = chrome.extension.getBackgroundPage();
 		var pref = backgroundPage.pref;
@@ -120,6 +127,16 @@
 			pref.set('icon-size', iconSizeBox.value);
 
 			var msg = Q('#icon-size-msg');
+			onSaved(msg);
+		}, false);
+
+
+		var searchBoxEnabled = Q('#search-box-enabled');
+		searchBoxEnabled.checked = pref.get('search-box-enabled');
+		searchBoxEnabled.addEventListener('change', function(){
+			pref.set('search-box-enabled', searchBoxEnabled.checked);
+
+			var msg = Q('#search-box-enabled-msg');
 			onSaved(msg);
 		}, false);
 

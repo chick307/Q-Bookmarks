@@ -44,6 +44,9 @@
 		document.querySelector('html')
 			.classList.add('icon-size-' + iconSize);
 
+		// 検索ボックスを表示するかどうか
+		var searchBoxEnabled = pref.get('search-box-enabled');
+
 		var lock = false; // アニメーション中にフォルダを開けないようにする
 		var stack = []; // 開いているフレーム
 
