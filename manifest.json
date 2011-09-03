@@ -1,6 +1,6 @@
 {
 	"name": "Q Bookmarks",
-	"version": "1.2.3",
+	"version": "1.2.4",
 	"description": "Bookmark Popup",
 	
 	"icons": {
@@ -18,6 +18,8 @@
 	
 	"background_page": "background.html",
 	"options_page": "views/option.html",
+	
+	"omnibox": {"keyword": "qb"},
 	
 	"browser_action": {
 		"default_title": "Q Bookmarks",
