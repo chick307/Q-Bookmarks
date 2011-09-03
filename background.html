@@ -232,6 +232,14 @@ chrome.omnibox.onInputEntered.addListener(function(text){
 				selected: true
 			});
 		});
+	}else{
+		chrome.tabs.getSelected(null, function(tab){
+			chrome.tabs.update(tab.id, {
+				url: 'http://www.google.com/search?btnI&q=' +
+					encodeURIComponent(text),
+				selected: true
+			});
+		});
 	}
 });
 
