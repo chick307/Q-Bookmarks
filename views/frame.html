@@ -32,7 +32,11 @@
 
 		// ポップアップを開いているときは pref は変更されない
 
-		var openIn = pref.get('open-in'); // ブックマークをどこで開くか
+		// レフトクリックでブックマークをどこで開くか
+		var openIn = pref.get('open-in');
+		// ミドルクリックでブックマークをどこで開くか
+		var mcOpenIn = pref.get('mc-open-in');
+
 		var fontFamily = pref.get('font-family'); // フォントファミリー
 		var iconSize = pref.get('icon-size'); // アイコンのサイズ
 

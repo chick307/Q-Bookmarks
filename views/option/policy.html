@@ -30,12 +30,18 @@
 <body>
 	<h1>Behavior</h1>
 	<ul>
-		<li><label for="open-in-box">Open bookmark in</label>
+		<li><label for="open-in-box">left-click opens bookmark in</label>
 		<select id="open-in-box">
 			<option value="1">current tab</option>
 			<option value="2">new tab</option>
 		</select>
 		<span id="open-in-msg">saved</span>
+		<li><label for="mc-open-in-box">middle-click opens bookmark in</label>
+		<select id="mc-open-in-box">
+			<option value="1">current tab</option>
+			<option value="2">new tab</option>
+		</select>
+		<span id="mc-open-in-msg">saved</span>
 		<li><input type="checkbox" id="hide-other-bookmarks-box">
 		<label for="hide-other-bookmarks-box">Hide &quot;Other Bookmarks&quot; folder</label>
 		<span id="hide-other-bookmarks-msg">saved</span></br>
@@ -82,6 +88,16 @@
 			pref.set('open-in', openInBox.value);
 
 			var msg = Q('#open-in-msg');
+			onSaved(msg);
+		}, false);
+
+
+		var mcOpenInBox = Q('#mc-open-in-box');
+		mcOpenInBox.value = pref.get('mc-open-in');
+		mcOpenInBox.addEventListener('change', function(){
+			pref.set('mc-open-in', mcOpenInBox.value);
+
+			var msg = Q('#mc-open-in-msg');
 			onSaved(msg);
 		}, false);
 
