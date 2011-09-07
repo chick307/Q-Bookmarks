@@ -50,7 +50,9 @@ function BookmarkItem(info, parent){
 			value: function(){
 				chrome.bookmarks.remove(this.id);
 			}
-		}
+		},
+		isItem: {value: true},
+		isFolder: {value: false}
 	});
 	
 	allBookmarks[info.id] = this;
@@ -103,6 +105,24 @@ function BookmarkFolder(info, parent){
 				chrome.bookmarks.removeTree(this.id);
 			}
 		},
+		search: {
+			value: function(text){
+				var result = [];
+				children.forEach(function(child){
+					if(child.isFolder){
+						child.search(text).forEach(function(r){
+							result.push(r);
+						});
+					}else if(child.title.toLowerCase().indexOf(text) !== -1 ||
+						child.url.toLowerCase().indexOf(text) !== -1){
+						result.push(child);
+					}
+				});
+				return result;
+			}
+		},
+		isItem: {value: false},
+		isFolder: {value: true},
 		onChildrenReordered: {
 			value: function(reorderInfo){
 				children = reorderInfo.map(function(id){
@@ -177,14 +197,63 @@ chrome.bookmarks.onChanged.addListener(function(id, changeInfo){
 });
 
 
+// Omniboxからの検索
+function search(text){
+	text = text.toLowerCase();
+	var result = bookmarkBar.search(text);
+	return result.concat(otherBookmarks.search(text));
+}
+
+chrome.omnibox.setDefaultSuggestion({
+	description: 'Q Bookmarks : Search "%s"'
+});
+
+chrome.omnibox.onInputChanged.addListener(function(text, suggest){
+	if(!text)
+		return;
+	var result = search(text).map(function(bookmark){
+		return {
+			content: bookmark.url,
+			description: 'Q Bookmarks : Open "' +
+				(bookmark.title === ''? bookmark.url: bookmark.title) + '"'
+		};
+	});
+	suggest(result);
+});
+
+chrome.omnibox.onInputEntered.addListener(function(text){
+	if(!text)
+		return;
+	var bookmark = search(text)[0];
+	if(bookmark){
+		chrome.tabs.getSelected(null, function(tab){
+			chrome.tabs.update(tab.id, {
+				url: bookmark.url,
+				selected: true
+			});
+		});
+	}else{
+		chrome.tabs.getSelected(null, function(tab){
+			chrome.tabs.update(tab.id, {
+				url: 'http://www.google.com/search?btnI&q=' +
+					encodeURIComponent(text),
+				selected: true
+			});
+		});
+	}
+});
+
+
 // オプションの初期化
 var pref = new Preference({prefix: 'pref-'});
 
 pref.setDefault('open-in', '2');
+pref.setDefault('mc-open-in', '2');
 pref.setDefault('font-family', 'sans-serif');
 pref.setDefault('icon-size', '16');
 pref.setDefault('hide-other-bookmarks', true);
 pref.setDefault('hide-other-bookmarks-if-empty', true);
+pref.setDefault('search-box-enabled', false);
 
 pref.addListener(function(key, value){
 	var event = document.createEvent('Event');

@@ -32,7 +32,11 @@
 
 		// ポップアップを開いているときは pref は変更されない
 
-		var openIn = pref.get('open-in'); // ブックマークをどこで開くか
+		// レフトクリックでブックマークをどこで開くか
+		var openIn = pref.get('open-in');
+		// ミドルクリックでブックマークをどこで開くか
+		var mcOpenIn = pref.get('mc-open-in');
+
 		var fontFamily = pref.get('font-family'); // フォントファミリー
 		var iconSize = pref.get('icon-size'); // アイコンのサイズ
 
@@ -43,6 +47,9 @@
 
 		document.querySelector('html')
 			.classList.add('icon-size-' + iconSize);
+
+		// 検索ボックスを表示するかどうか
+		var searchBoxEnabled = pref.get('search-box-enabled');
 
 		var lock = false; // アニメーション中にフォルダを開けないようにする
 		var stack = []; // 開いているフレーム
@@ -58,42 +65,23 @@
 		}
 
 
-		function getBookmarkView(id){
-			if(id in BookmarkView.list){
-				return BookmarkView.list[id];
-			}else{
-				return BookmarkView.list[id] = new BookmarkView(id);
-			}
-		}
+		function FrameView(){}
 
-
-		function BookmarkView(id, frame){
-			if(!frame){
-				frame = document.createElement('iframe');
-				frame.style.left = '100%';
-				frame.src = '/views/list.html#' + id;
+		FrameView.prototype = {
+			init: function(src, frame){
+				if(!frame){
+					frame = document.createElement('iframe');
+					frame.style.left = '100%';
+					frame.src = src;
+				}
+				this.frame = frame;
 				document.body.appendChild(frame);
-			}
-
-			this.frame = frame;
-			this.id = this.frame.dataset.bookmarkId = id;
-		}
-
-		BookmarkView.list = {};
-		BookmarkView.prototype = {
+			},
 			open: function(){
 				if(lock)
-					return;
+					return false;
 				lock = true;
 				var frame = this.frame;
-				stack.unshift(frame);
-
-				// フレームの中身のサイズを取得してポップアップのサイズ変更
-				getHeight(frame, function(height, callback){
-					height = Math.min(maxHeight, Math.max(minHeight, height));
-					setHeight(height, callback)
-				});
-
 				frame.style.display = 'block';
 				setTimeout(function(){
 					frame.style.left = '0';
@@ -101,12 +89,26 @@
 						lock = false;
 					}, 300);
 				}, 0);
+
+				stack.unshift(this.frame);
+
+				// フレームの中身のサイズを取得してポップアップのサイズ変更
+				getHeight(frame, function(height, callback){
+					height = Math.min(maxHeight, Math.max(minHeight, height));
+					setHeight(height, callback)
+				});
 			},
 			close: function(){
 				if(lock)
 					return;
 				lock = true;
 				var frame = this.frame;
+				frame.style.left = '100%';
+				setTimeout(function(){
+					frame.style.display = 'none';
+					lock = false;
+				}, 300);
+
 				stack.shift();
 
 				// フレームの中身のサイズを取得してポップアップのサイズ変更
@@ -114,25 +116,32 @@
 					height = Math.min(maxHeight, Math.max(minHeight, height));
 					setHeight(height, callback)
 				});
-
-				frame.style.left = '100%';
-				setTimeout(function(){
-					frame.style.display = 'none';
-					lock = false;
-				}, 300);
 			},
 			reload: function(){
 				this.frame.contentWindow.location.reload();
 			}
 		};
 
-		var startFrame = document.querySelector('iframe');
-		BookmarkView.list['1'] = new BookmarkView('1', startFrame);
-		stack.push(startFrame);
-		getHeight(startFrame, function(height, callback){
-			document.body.style.height = height + 'px';
-			callback();
-		});
+
+		function getBookmarkView(id){
+			return BookmarkView.get(id);
+		}
+
+
+		function BookmarkView(id, frame){
+			this.init('/views/list.html#' + id, frame);
+			this.id = this.frame.dataset.bookmarkId = id;
+		}
+
+		BookmarkView.list = {};
+		BookmarkView.prototype = new FrameView();
+		BookmarkView.get = function(id){
+			if(id in BookmarkView.list){
+				return BookmarkView.list[id];
+			}else{
+				return BookmarkView.list[id] = new BookmarkView(id);
+			}
+		};
 
 
 		var raf = window.requestAnimationFrame ||
@@ -150,6 +159,18 @@
 
 
 		function getBookmarkEdit(id){
+			return BookmarkEdit.get(id);
+		}
+
+
+		function BookmarkEdit(id){
+			this.init('edit.html#' + id);
+			this.id = this.frame.dataset.bookmarkId = id;
+		}
+
+		BookmarkEdit.list = {};
+		BookmarkEdit.prototype = new FrameView();
+		BookmarkEdit.get = function(id){
 			if(id == 2){
 				return null;
 			}else if(id in BookmarkEdit.list){
@@ -157,43 +178,27 @@
 			}else{
 				return BookmarkEdit.list[id] = new BookmarkEdit(id);
 			}
+		};
+
+
+		function BookmarkSearch(text){
+			this.init('list.html');
+			this.frame.dataset.bookmarkId = 0;
+			this.frame.onload = function(){
+				var bookmarks = backgroundPage.search(text);
+				bookmarks.forEach(this.contentWindow.appendItem);
+
+				// フレームの中身のサイズを取得してポップアップのサイズ変更
+				getHeight(this, function(height, callback){
+					height = Math.min(maxHeight, Math.max(minHeight, height));
+					setHeight(height, callback)
+				});
+			};
 		}
 
-
-		function BookmarkEdit(id){
-			var frame = this.frame = document.createElement('iframe');
-			frame.style.left = '100%';
-			frame.src = 'edit.html#' + id;
-			document.body.appendChild(frame);
-			this.id = frame.dataset.bookmarkId = id;
-		}
-
-		BookmarkEdit.list = {};
-		BookmarkEdit.prototype = {
-			open: function(){
-				if(lock)
-					return false;
-				lock = true;
-				var frame = this.frame;
-				frame.style.display = 'block';
-				setTimeout(function(){
-					frame.style.left = '0';
-					setTimeout(function(){
-						lock = false;
-					}, 300);
-				}, 0);
-			},
-			close: function(){
-				if(lock)
-					return;
-				lock = true;
-				var frame = this.frame;
-				frame.style.left = '100%';
-				setTimeout(function(){
-					frame.style.display = 'none';
-					lock = false;
-				}, 300);
-			}
+		BookmarkSearch.prototype = new FrameView();
+		BookmarkSearch.get = function(text){
+			return new BookmarkSearch(text);
 		};
 
 
@@ -220,7 +225,8 @@
 
 		function getHeight(frame, callback){
 			var win = frame.contentWindow;
-			if(frame.contentWindow.loaded){
+
+			if(win.loaded){
 				win.getHeight(callback);
 			}else{
 				win.addEventListener('load', function(){
@@ -228,6 +234,16 @@
 				}, false);
 			}
 		}
+
+
+		document.querySelector('iframe').onload = function(){
+			BookmarkView.list['1'] = new BookmarkView('1', this);
+			stack.push(this);
+			getHeight(this, function(height, callback){
+				document.body.style.height = height + 'px';
+				callback();
+			});
+		};
 	</script>
 </body>
 </html>
