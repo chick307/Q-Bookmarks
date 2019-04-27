@@ -1,0 +1,22 @@
+.block-view {
+    display: flex;
+}
+
+.inline-view {
+    display: inline-flex;
+}
+
+.icon {
+    display: inline-block;
+}
+
+.title {
+    display: inline-block;
+    flex: 1;
+    padding: 0 0.2em;
+    font-size: 12px;
+    line-height: 20px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
