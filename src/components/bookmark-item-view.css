@@ -6,8 +6,21 @@
     display: inline-flex;
 }
 
+.block-view,
+.inline-view {
+    cursor: pointer;
+}
+
+.block-view:hover,
+.inline-view:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
 .icon {
     display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin: 2px;
 }
 
 .title {

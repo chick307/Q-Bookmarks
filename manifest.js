@@ -20,6 +20,7 @@ module.exports = {
     },
     minimum_chrome_version: '73',
     permissions: [
+        'activeTab',
         'bookmarks',
         'chrome://favicon/',
     ],

@@ -1,0 +1,43 @@
+.view {
+    position: relative;
+    overflow: hidden;
+    width: 200px;
+    transition: height 0.3s ease-out;
+    user-select: none;
+}
+
+.title-bar {
+    display: flex;
+    border-bottom: 1px solid #DDDDDD;
+}
+
+.back-button {
+    outline: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    box-sizing: border-box;
+    line-height: 24px;
+    font-size: 16px;
+    color: #666;
+}
+
+.back-button:hover {
+    background: #EEE;
+}
+
+.back-button + .title {
+    padding-left: 0;
+}
+
+.title {
+    flex: 1;
+    text-align: center;
+    padding: 0 24px;
+    line-height: 24px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
