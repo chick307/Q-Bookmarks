@@ -10,7 +10,8 @@ const manifest = require('./manifest.js');
 module.exports = {
     context: __dirname,
     entry: {
-        popup: './src/popup.js',
+        'options-page': './src/options-page.js',
+        'popup': './src/popup.js',
     },
     mode: 'production',
     module: {

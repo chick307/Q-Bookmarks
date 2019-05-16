@@ -19,6 +19,10 @@ module.exports = {
         128: 'images/icon-128.png',
     },
     minimum_chrome_version: '73',
+    options_ui: {
+        chrome_style: true,
+        page: 'options-page.html',
+    },
     permissions: [
         'activeTab',
         'bookmarks',
