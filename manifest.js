@@ -27,5 +27,6 @@ module.exports = {
         'activeTab',
         'bookmarks',
         'chrome://favicon/',
+        'storage',
     ],
 };

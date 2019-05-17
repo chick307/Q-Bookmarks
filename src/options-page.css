@@ -1,0 +1,11 @@
+.section {
+    margin: 0 0.5em 1em;
+}
+
+.section + .section {
+    margin-top: 1em;
+}
+
+.section-title {
+    margin: 0.5em -0.5em;
+}

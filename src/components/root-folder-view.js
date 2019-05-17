@@ -1,17 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import ChromeContext from '../contexts/chrome-context.js';
-import WindowContext from '../contexts/window-context.js';
 import BookmarkNode from '../entities/bookmark-node';
 import BookmarkFolderView from './bookmark-folder-view.js';
 import BookmarkItemView from './bookmark-item-view.js';
 import styles from './root-folder-view.css';
 
-export const RootFolderView = ({ root }) => {
-    const chrome = React.useContext(ChromeContext);
-    const window = React.useContext(WindowContext);
-
+export const RootFolderView = ({ bookmarkService, root }) => {
     const [bookmarkBar, otherBookmarks] = root.children;
 
     const [stack, setStack] = React.useState([]);
@@ -25,24 +20,15 @@ export const RootFolderView = ({ root }) => {
     const onNodeClick = React.useCallback((bookmarkNode) => {
         if (bookmarkNode.isFolder()) {
             setStack((stack) => [...stack, bookmarkNode]);
-        } else if (bookmarkNode.isBookmarklet()) {
-            const code = bookmarkNode.getBookmarkletCode();
-            chrome.tabs.executeScript({ code });
-            window.close();
         } else {
-            const { url } = bookmarkNode;
-            chrome.tabs.update({ active: true, url });
-            window.close();
+            bookmarkService.handleBookmarkClick(bookmarkNode);
         }
-    }, []);
+    }, [bookmarkService]);
 
     const onNodeMiddleClick = React.useCallback((bookmarkNode) => {
-        if (bookmarkNode.isFolder() || bookmarkNode.isBookmarklet())
-            return;
-        const { url } = bookmarkNode;
-        chrome.tabs.create({ url });
-        window.close();
-    }, []);
+        if (!bookmarkNode.isFolder())
+            bookmarkService.handleBookmarkMiddleClick(bookmarkNode);
+    }, [bookmarkService]);
 
     return (
         <div className={styles.view}>
@@ -71,6 +57,7 @@ export const RootFolderView = ({ root }) => {
 };
 
 RootFolderView.propTypes = {
+    bookmarkService: PropTypes.object.isRequired,
     root: PropTypes.instanceOf(BookmarkNode).isRequired,
 };
 
