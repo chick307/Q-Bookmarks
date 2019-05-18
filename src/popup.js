@@ -7,6 +7,7 @@ import WindowContext from './contexts/window-context.js';
 import BookmarkService from './services/bookmark-service.js';
 import BookmarkQueryService from './services/bookmark-query-service.js';
 import OptionsService from './services/options-service.js';
+import './popup.css';
 
 const Popup = () => {
     const chrome = React.useContext(ChromeContext);

@@ -1,15 +1,18 @@
 .view {
     position: relative;
     overflow: hidden;
-    width: 200px;
+    width: 240px;
     transition: height 0.3s ease-out;
     user-select: none;
+    --title-bar-height: 28px;
 }
 
 .title-bar {
     display: flex;
     border-bottom: 1px solid #DDDDDD;
-    height: 25px;
+    height: calc(var(--title-bar-height) + 2px);
+    box-sizing: border-box;
+    margin-bottom: 1px;
 }
 
 .back-button,
@@ -18,12 +21,11 @@
     border: none;
     margin: 0;
     padding: 0;
-    width: 24px;
-    height: 24px;
+    width: var(--title-bar-height);
+    height: var(--title-bar-height);
     box-sizing: border-box;
-    line-height: 24px;
-    font-size: 16px;
     color: #666;
+    cursor: pointer;
 }
 
 .back-button:hover,
@@ -39,7 +41,7 @@
 .bookmark-manager-button > img {
     width: 16px;
     height: 16px;
-    margin: 4px;
+    margin: calc((var(--title-bar-height) - 16px) / 2);
     opacity: 0.2;
 }
 
@@ -58,8 +60,8 @@
 .title {
     flex: 1;
     text-align: center;
-    padding: 0 0 0 24px;
-    line-height: 24px;
+    padding: 0 0 0 var(--title-bar-height);
+    line-height: var(--title-bar-height);
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
