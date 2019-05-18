@@ -9,12 +9,12 @@ export const BookmarkIcon = ({ bookmarkNode }) => {
     if (bookmarkNode.url) {
         const url = `chrome://favicon/${bookmarkNode.url}`;
         return (
-            <img src={url} width={16} height={16} />
+            <img src={url} width={16} height={16} title={bookmarkNode.url} />
         );
     } else {
         const url = chrome.runtime.getURL('images/folder-16.png');
         return (
-            <img src={url} width={16} height={16} />
+            <img src={url} width={16} height={16} title={bookmarkNode.url} />
         );
     }
 };

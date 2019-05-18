@@ -2,12 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import BookmarkNode from '../entities/bookmark-node.js';
+import useTooltipIfTextOverflow from '../hooks/tooltip-if-text-overflow.js';
 import BookmarkIcon from './bookmark-icon.js';
 import styles from './bookmark-item-view.css';
 
 const MOUSE_EVENT_MIDDLE_BUTTON = 1;
 
 export const BookmarkItemView = ({ bookmarkNode, onNodeClick, onNodeMiddleClick }) => {
+    const titleRef = React.useRef();
+
     const onClick = React.useCallback(() => {
         if (onNodeClick != null)
             onNodeClick(bookmarkNode);
@@ -23,13 +26,15 @@ export const BookmarkItemView = ({ bookmarkNode, onNodeClick, onNodeMiddleClick 
 
     const inline = !bookmarkNode.title;
 
+    useTooltipIfTextOverflow(titleRef, [bookmarkNode.title]);
+
     return (
         <div className={inline ? styles.inlineView : styles.blockView} onClick={onClick} onMouseDown={onMouseDown}>
             <span className={styles.icon}>
                 <BookmarkIcon bookmarkNode={bookmarkNode} />
             </span>
             {inline ? null : (
-                <span className={styles.title}>
+                <span ref={titleRef} className={styles.title}>
                     {bookmarkNode.title}
                 </span>
             )}
