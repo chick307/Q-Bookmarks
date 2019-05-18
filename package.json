@@ -30,7 +30,10 @@
     "url": "git+ssh://git@github.com/chick307/Q-Bookmarks.git"
   },
   "scripts": {
+    "archive": "sh archive.sh",
+    "prearchive": "npm run clean && npm run build",
     "build": "webpack",
+    "clean": "rm -rf archive.zip lib manifest.json",
     "dev": "webpack --config webpack.dev.js --watch",
     "fmt": "eslint --fix .",
     "lint": "eslint .",
