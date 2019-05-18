@@ -54,8 +54,8 @@ export const RootFolderView = ({ bookmarkService, root }) => {
                         <div ref={titleRef} className={styles.title}>{bookmarkBar.title}</div>
                         {bookmarkManagerButton}
                     </div>
-                    <BookmarkFolderView bookmarkFolder={bookmarkBar}
-                        onNodeClick={onNodeClick} onNodeMiddleClick={onNodeMiddleClick} />
+                    {bookmarkBar.children.length === 0 ? null : <BookmarkFolderView bookmarkFolder={bookmarkBar}
+                        onNodeClick={onNodeClick} onNodeMiddleClick={onNodeMiddleClick} />}
                     <BookmarkItemView bookmarkNode={otherBookmarks}
                         onNodeClick={onNodeClick} onNodeMiddleClick={onNodeMiddleClick} />
                 </>

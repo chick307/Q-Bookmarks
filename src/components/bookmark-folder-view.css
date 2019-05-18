@@ -1,0 +1,8 @@
+.view:empty::before {
+    content: '\2012';
+    display: block;
+    text-align: center;
+    height: 28px;
+    line-height: 28px;
+    color: #CCCCCC;
+}
