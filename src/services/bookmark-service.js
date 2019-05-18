@@ -51,6 +51,20 @@ export default class BookmarkService {
         this._handleBookmarkItemClick(bookmarkNode, behavior);
     }
 
+    handleBookmarkManagerButtonClick(bookmarkFolder) {
+        this.openBookmarkManager(bookmarkFolder == null ? {} : bookmarkFolder);
+        this._window.close();
+    }
+
+    async openBookmarkManager({ id = null } = {}) {
+        const tab = await new Promise((resolve) => {
+            const url = `chrome://bookmarks${id === null ? '' : `/?id=${encodeURIComponent(id)}`}`;
+            this._chrome.tabs.create({ url }, resolve);
+        });
+
+        return tab;
+    }
+
     async openInActiveTab({ url }) {
         const tab = await new Promise((resolve) => {
             this._chrome.tabs.update({ active: true, url }, resolve);

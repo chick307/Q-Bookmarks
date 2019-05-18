@@ -12,7 +12,8 @@
     height: 25px;
 }
 
-.back-button {
+.back-button,
+.bookmark-manager-button {
     outline: none;
     border: none;
     margin: 0;
@@ -25,7 +26,8 @@
     color: #666;
 }
 
-.back-button:hover {
+.back-button:hover,
+.bookmark-manager-button:hover {
     background: #EEE;
 }
 
@@ -33,7 +35,8 @@
     padding-left: 0;
 }
 
-.back-button > img {
+.back-button > img,
+.bookmark-manager-button > img {
     width: 16px;
     height: 16px;
     margin: 4px;
@@ -44,10 +47,18 @@
     opacity: 0.5;
 }
 
+.bookmark-manager-button > img {
+    opacity: 0;
+}
+
+.bookmark-manager-button:hover > img {
+    opacity: 0.4;
+}
+
 .title {
     flex: 1;
     text-align: center;
-    padding: 0 24px;
+    padding: 0 0 0 24px;
     line-height: 24px;
     text-overflow: ellipsis;
     overflow: hidden;

@@ -20,6 +20,10 @@ export const RootFolderView = ({ bookmarkService, root }) => {
         setStack((stack) => stack.slice(0, -1));
     }, []);
 
+    const onBookmarkManagerButtonClick = React.useCallback(() => {
+        bookmarkService.handleBookmarkManagerButtonClick(bookmarkFolder);
+    }, [bookmarkService, bookmarkFolder]);
+
     const onNodeClick = React.useCallback((bookmarkNode) => {
         if (bookmarkNode.isFolder()) {
             setStack((stack) => [...stack, bookmarkNode]);
@@ -35,12 +39,20 @@ export const RootFolderView = ({ bookmarkService, root }) => {
 
     useTooltipIfTextOverflow(titleRef, [bookmarkFolder === null ? bookmarkBar.title : bookmarkFolder.title]);
 
+    const bookmarkManagerButton = (
+        <button className={styles.bookmarkManagerButton} onClick={onBookmarkManagerButtonClick}>
+            <img width={16} height={16} src={'images/fontawesome/ellipsis-h.svg'}
+                alt={'The icon for the button to open bookmark manager'} />
+        </button>
+    );
+
     return (
         <div className={styles.view}>
             {bookmarkFolder === null ? (
                 <>
                     <div className={styles.titleBar}>
                         <div ref={titleRef} className={styles.title}>{bookmarkBar.title}</div>
+                        {bookmarkManagerButton}
                     </div>
                     <BookmarkFolderView bookmarkFolder={bookmarkBar}
                         onNodeClick={onNodeClick} onNodeMiddleClick={onNodeMiddleClick} />
@@ -55,6 +67,7 @@ export const RootFolderView = ({ bookmarkService, root }) => {
                                 alt={'The icon for the back button'} />
                         </button>
                         <div ref={titleRef} className={styles.title}>{bookmarkFolder.title}</div>
+                        {bookmarkManagerButton}
                     </div>
                     <BookmarkFolderView bookmarkFolder={bookmarkFolder}
                         onNodeClick={onNodeClick} onNodeMiddleClick={onNodeMiddleClick} />
