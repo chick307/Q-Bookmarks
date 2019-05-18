@@ -9,6 +9,7 @@
 .title-bar {
     display: flex;
     border-bottom: 1px solid #DDDDDD;
+    height: 25px;
 }
 
 .back-button {
@@ -30,6 +31,17 @@
 
 .back-button + .title {
     padding-left: 0;
+}
+
+.back-button > img {
+    width: 16px;
+    height: 16px;
+    margin: 4px;
+    opacity: 0.2;
+}
+
+.back-button:hover > img {
+    opacity: 0.5;
 }
 
 .title {

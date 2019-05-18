@@ -50,7 +50,10 @@ export const RootFolderView = ({ bookmarkService, root }) => {
             ) : (
                 <>
                     <div className={styles.titleBar}>
-                        <button className={styles.backButton} onClick={onBackButtonClick}>&lt;</button>
+                        <button className={styles.backButton} onClick={onBackButtonClick}>
+                            <img width={16} height={16} src={'images/fontawesome/angle-left.svg'}
+                                alt={'The icon for the back button'} />
+                        </button>
                         <div ref={titleRef} className={styles.title}>{bookmarkFolder.title}</div>
                     </div>
                     <BookmarkFolderView bookmarkFolder={bookmarkFolder}
