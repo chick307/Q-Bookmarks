@@ -12,7 +12,7 @@ export const BookmarkIcon = ({ bookmarkNode }) => {
             <img src={url} width={16} height={16} title={bookmarkNode.url} />
         );
     } else {
-        const url = chrome.runtime.getURL('images/fontawesome/folder.svg');
+        const url = chrome.runtime.getURL('assets/images/fontawesome/folder.svg');
         return (
             <img src={url} width={16} height={16} title={bookmarkNode.url} />
         );

@@ -1,9 +1,7 @@
 #!/bin/sh
 
 zip archive.zip \
-  images \
+  assets \
   lib \
   manifest.json \
-  options-page.html \
-  popup.html \
   -r

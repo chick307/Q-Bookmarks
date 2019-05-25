@@ -41,7 +41,7 @@ export const RootFolderView = ({ bookmarkService, root }) => {
 
     const bookmarkManagerButton = (
         <button className={styles.bookmarkManagerButton} onClick={onBookmarkManagerButtonClick}>
-            <img width={16} height={16} src={'images/fontawesome/ellipsis-h.svg'}
+            <img width={16} height={16} src={'assets/images/fontawesome/ellipsis-h.svg'}
                 alt={'The icon for the button to open bookmark manager'} />
         </button>
     );
@@ -63,7 +63,7 @@ export const RootFolderView = ({ bookmarkService, root }) => {
                 <>
                     <div className={styles.titleBar}>
                         <button className={styles.backButton} onClick={onBackButtonClick}>
-                            <img width={16} height={16} src={'images/fontawesome/angle-left.svg'}
+                            <img width={16} height={16} src={'assets/images/fontawesome/angle-left.svg'}
                                 alt={'The icon for the back button'} />
                         </button>
                         <div ref={titleRef} className={styles.title}>{bookmarkFolder.title}</div>

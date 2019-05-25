@@ -2,6 +2,7 @@
 
 const path = require('path');
 
+const CopyPlugin = require('copy-webpack-plugin');
 const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -52,6 +53,7 @@ module.exports = {
         path: path.resolve(__dirname, 'lib'),
     },
     plugins: [
+        new CopyPlugin([{ from: 'assets', to: 'assets' }]),
         new GenerateJsonPlugin('../manifest.json', manifest, null, 2),
         new MiniCssExtractPlugin({ filename: '[name].css' }),
     ],
