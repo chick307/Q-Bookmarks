@@ -1,12 +1,7 @@
 /* eslint sort-keys: 'error' */
 
-const path = require('path');
-
 const CopyPlugin = require('copy-webpack-plugin');
-const GenerateJsonPlugin = require('generate-json-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-
-const manifest = require('./manifest.js');
 
 module.exports = {
     context: __dirname,
@@ -50,11 +45,9 @@ module.exports = {
     },
     output: {
         filename: '[name].js',
-        path: path.resolve(__dirname, 'lib'),
     },
     plugins: [
         new CopyPlugin([{ from: 'assets', to: 'assets' }]),
-        new GenerateJsonPlugin('../manifest.json', manifest, null, 2),
         new MiniCssExtractPlugin({ filename: '[name].css' }),
     ],
 };

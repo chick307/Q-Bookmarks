@@ -31,11 +31,11 @@
     "url": "git+ssh://git@github.com/chick307/Q-Bookmarks.git"
   },
   "scripts": {
-    "archive": "sh archive.sh",
+    "archive": "sh scripts/archive.sh",
     "prearchive": "npm run clean && npm run build",
-    "build": "webpack",
-    "clean": "rm -rf archive.zip lib manifest.json",
-    "dev": "webpack --config webpack.dev.js --watch",
+    "build": "webpack --config webpack.release.js",
+    "clean": "rm -rf build/release build/archive.zip",
+    "debug": "webpack --config webpack.debug.js --watch",
     "fmt": "eslint --fix .",
     "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
