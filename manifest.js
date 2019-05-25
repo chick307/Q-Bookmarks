@@ -8,7 +8,7 @@ module.exports = {
     version: pkg.version,
     description: pkg.description,
     browser_action: {
-        default_icon: 'images/icon-19.png',
+        default_icon: 'images/browser-action-64.png',
         default_popup: 'popup.html',
         default_title: 'Q Bookmarks',
     },
