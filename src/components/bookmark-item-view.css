@@ -1,0 +1,37 @@
+.block-view {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+}
+
+.inline-view {
+    display: inline-flex;
+    padding: 4px;
+}
+
+.block-view,
+.inline-view {
+    cursor: pointer;
+}
+
+.block-view:hover,
+.inline-view:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
+.title {
+    display: inline-block;
+    flex: 1;
+    padding: 0 6px;
+    font-size: 12px;
+    line-height: 16px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
